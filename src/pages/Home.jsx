@@ -1,9 +1,10 @@
 import React from "react";
+import { EllipsisVertical } from "lucide-react";
 
 const columns = [
   {
     title: "To Do",
-    color: "bg-purple-100",
+    color: "bg-[#F0E6FF] ",
     headerColor: "bg-purple-200",
     emoji: "🗂️",
   },
@@ -22,8 +23,11 @@ const columns = [
 ];
 
 const Card = () => (
-  <div className="bg-white rounded-xl border p-4 shadow-sm space-y-3">
-    <div className="text-xs text-purple-600 font-bold">PROJECT</div>
+  <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3">
+    <div className="text-xs text-purple-600 font-bold flex justify-between">
+      <p>Project</p>
+      <EllipsisVertical />
+    </div>
     <h3 className="font-semibold">Task name</h3>
     <p className="text-sm text-gray-500">
       Create a high-fidelity UI for the landing page following brand guidelines.
@@ -48,11 +52,17 @@ const Card = () => (
 
 const Home = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-transparent pr-15">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6  mr-15">
       {columns.map((col, idx) => (
-        <div key={idx} className="space-y-4">
-          <div className={`p-4 rounded-xl ${col.headerColor}`}>
-            <h2 className="text-md font-semibold flex items-center gap-2">
+        <div key={idx} className="space-y-4 shadow-sm p-5 rounded-xl">
+          <div
+            className={`p-4 rounded-xl  ${
+              (idx === 0 && "bg-[#F0E6FF]  text-[#6600FF] ") ||
+              (idx === 1 && "bg-[#FFB0B0] text-[#FF0000] ") ||
+              (idx === 2 && "bg-[#B0FFC0] text-[#00BF26] ")
+            }`}
+          >
+            <h2 className="text-md font-[400] flex items-center gap-2">
               {col.emoji} {col.title}
             </h2>
           </div>
