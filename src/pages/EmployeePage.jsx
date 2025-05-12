@@ -18,7 +18,7 @@ const EmployeePage = () => {
         {employeeData.map((employee, index) => (
           <div
             key={index}
-            className="border border-[#f0f0f0] rounded-xl shadow-sm hover:shadow-md transition-all bg-white w-[25vw] p-8 "
+            className="border border-[#f0f0f0] rounded-xl shadow-sm hover:shadow-md transition-all bg-white w-[25vw] p-8 hover:bg-[#F9F5FF] hover:border-[#D0B0FF] "
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ const EmployeePage = () => {
 
       <div className="mt-10 flex justify-end">
         <Button
-          variant="outline"
+          variant="custom"
           style={{
             backgroundColor: "white",
             border: "1.5px solid #004368",

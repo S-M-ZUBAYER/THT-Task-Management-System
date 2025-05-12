@@ -7,6 +7,7 @@ import LogOut from "../assets/icons/logout-03.svg";
 import ToDo from "../assets/icons/to do.svg";
 import TaskProgress from "../assets/icons/task in progress.svg";
 import TaskDone from "../assets/icons/task done.svg";
+import ThreeDots from "../assets/icons/more-vertical-circle-01.svg";
 
 export default {
   Dashboard,
@@ -18,4 +19,5 @@ export default {
   ToDo,
   TaskProgress,
   TaskDone,
+  ThreeDots,
 };

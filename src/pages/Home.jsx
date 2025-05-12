@@ -27,7 +27,7 @@ const Card = () => (
   <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3 ">
     <div className="text-xs text-purple-600 font-bold flex justify-between">
       <p>Project</p>
-      <EllipsisVertical />
+      <img src={icons.ThreeDots} alt="three dots" className="w-5 rotate-90" />
     </div>
     <h3 className="font-semibold">Task name</h3>
     <p className="text-sm text-gray-500">
@@ -66,7 +66,20 @@ const Home = () => {
             }`}
           >
             <div className="text-md font-[400] flex items-center gap-2">
-              <img src={col.emoji} alt="emoji" className="w-5" />
+              <img
+                src={col.emoji}
+                alt="icon"
+                className="w-5 h-5"
+                style={{
+                  filter:
+                    idx === 0
+                      ? "invert(16%) sepia(88%) saturate(6361%) hue-rotate(258deg) brightness(100%) contrast(101%)"
+                      : idx === 1
+                      ? "invert(18%) sepia(95%) saturate(5661%) hue-rotate(1deg) brightness(103%) contrast(102%)"
+                      : "invert(43%) sepia(86%) saturate(2832%) hue-rotate(95deg) brightness(97%) contrast(102%)",
+                }}
+              />
+
               <p>{col.title} </p>
             </div>
           </div>
