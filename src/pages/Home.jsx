@@ -1,29 +1,30 @@
 import React from "react";
 import { EllipsisVertical } from "lucide-react";
+import icons from "@/constants/icons";
 
 const columns = [
   {
     title: "To Do",
     color: "bg-[#F0E6FF] ",
     headerColor: "bg-purple-200",
-    emoji: "🗂️",
+    emoji: icons.ToDo,
   },
   {
     title: "In Progress",
     color: "bg-red-100",
     headerColor: "bg-red-200",
-    emoji: "🔴",
+    emoji: icons.TaskProgress,
   },
   {
     title: "Completed",
     color: "bg-green-100",
     headerColor: "bg-green-200",
-    emoji: "✅",
+    emoji: icons.TaskDone,
   },
 ];
 
 const Card = () => (
-  <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3">
+  <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3 ">
     <div className="text-xs text-purple-600 font-bold flex justify-between">
       <p>Project</p>
       <EllipsisVertical />
@@ -52,19 +53,22 @@ const Card = () => (
 
 const Home = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6  mr-15">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6  mx-10 ">
       {columns.map((col, idx) => (
         <div key={idx} className="space-y-4 shadow-sm p-5 rounded-xl">
           <div
             className={`p-4 rounded-xl  ${
               (idx === 0 && "bg-[#F0E6FF]  text-[#6600FF] ") ||
-              (idx === 1 && "bg-[#FFB0B0] text-[#FF0000] ") ||
-              (idx === 2 && "bg-[#B0FFC0] text-[#00BF26] ")
+              (idx === 1 &&
+                "bg-[#FFE6E6] text-[#FF0000] border border-[#FFB0B0] ") ||
+              (idx === 2 &&
+                "bg-[#E6FFEB] text-[#00BF26] border border-[#B0FFC0] ")
             }`}
           >
-            <h2 className="text-md font-[400] flex items-center gap-2">
-              {col.emoji} {col.title}
-            </h2>
+            <div className="text-md font-[400] flex items-center gap-2">
+              <img src={col.emoji} alt="emoji" className="w-5" />
+              <p>{col.title} </p>
+            </div>
           </div>
           <Card />
           <Card />

@@ -5,8 +5,8 @@ import { Bell } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <div className="flex items-center justify-end gap-4 p-4 pr-20 ">
-      <Input placeholder="Search" className="w-1/3" />
+    <div className="flex items-center justify-end gap-4 p-4 pt-8 pr-20 ">
+      <Input placeholder="Search" className="w-1/4 rounded-2xl" />
       <div className="border-2 border-[#B0C5D0] rounded-full p-1">
         <Bell className="text-[#B0C5D0]" />
       </div>

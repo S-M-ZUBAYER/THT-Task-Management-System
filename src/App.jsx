@@ -7,6 +7,7 @@ import {
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
+import EmployeePage from "./pages/EmployeePage";
 
 const AppLayout = () => {
   return (
@@ -14,7 +15,7 @@ const AppLayout = () => {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Navbar />
-        <main className="p-6 overflow-y-auto">
+        <main className="p-6 overflow-y-auto custom-scrollbar">
           <Outlet />
         </main>
       </div>
@@ -28,9 +29,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Home />} />
-          {/* <Route path="created" element={<About />} />
-          <Route path="pending" element={<Contact />} />
-          <Route path="disabled" element={<Pending />} /> */}
+          <Route path="employees" element={<EmployeePage />} />
         </Route>
       </Routes>
     </Router>

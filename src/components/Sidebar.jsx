@@ -1,15 +1,15 @@
 import React from "react";
-import { Home, ListTodo, Bug, Users, Calendar, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
+import icons from "@/constants/icons";
 
 const links = [
-  { label: "Dashboard", icon: Home, path: "/" },
-  { label: "Tasks", icon: ListTodo, path: "/tasks" },
-  { label: "Bug management", icon: Bug, path: "/bugs" },
-  { label: "Employees", icon: Users, path: "/employees" },
-  { label: "Events", icon: Calendar, path: "/events" },
+  { label: "Dashboard", icon: icons.Dashboard, path: "/" },
+  { label: "Tasks", icon: icons.Task, path: "/tasks" },
+  { label: "Bug management", icon: icons.Bug, path: "/bugs" },
+  { label: "Employees", icon: icons.Employees, path: "/employees" },
+  { label: "Events", icon: icons.Event, path: "/events" },
 ];
 
 const Sidebar = () => {
@@ -35,7 +35,7 @@ const Sidebar = () => {
                 outline: "none",
               })}
             >
-              {React.createElement(link.icon, { size: 18 })}
+              <img src={link.icon} alt="icons" className="w-5" />
               <span>{link.label}</span>
             </NavLink>
           ))}
@@ -50,7 +50,7 @@ const Sidebar = () => {
             color: "#BDBDBD",
           }}
         >
-          <LogOut size={18} /> Log out
+          <img src={icons.LogOut} alt="log out" className="w-5" /> Log out
         </Button>
       </div>
     </aside>
