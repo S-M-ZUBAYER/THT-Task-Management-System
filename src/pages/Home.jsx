@@ -1,32 +1,33 @@
 import React from "react";
 import { EllipsisVertical } from "lucide-react";
+import icons from "@/constants/icons";
 
 const columns = [
   {
     title: "To Do",
     color: "bg-[#F0E6FF] ",
     headerColor: "bg-purple-200",
-    emoji: "🗂️",
+    emoji: icons.ToDo,
   },
   {
     title: "In Progress",
     color: "bg-red-100",
     headerColor: "bg-red-200",
-    emoji: "🔴",
+    emoji: icons.TaskProgress,
   },
   {
     title: "Completed",
     color: "bg-green-100",
     headerColor: "bg-green-200",
-    emoji: "✅",
+    emoji: icons.TaskDone,
   },
 ];
 
 const Card = () => (
-  <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3">
+  <div className="bg-white rounded-xl border-[#E8D9FF] border p-4  space-y-3 ">
     <div className="text-xs text-purple-600 font-bold flex justify-between">
       <p>Project</p>
-      <EllipsisVertical />
+      <img src={icons.ThreeDots} alt="three dots" className="w-5 rotate-90" />
     </div>
     <h3 className="font-semibold">Task name</h3>
     <p className="text-sm text-gray-500">
@@ -52,19 +53,35 @@ const Card = () => (
 
 const Home = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6  mr-15">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6  mx-10 ">
       {columns.map((col, idx) => (
         <div key={idx} className="space-y-4 shadow-sm p-5 rounded-xl">
           <div
             className={`p-4 rounded-xl  ${
               (idx === 0 && "bg-[#F0E6FF]  text-[#6600FF] ") ||
-              (idx === 1 && "bg-[#FFB0B0] text-[#FF0000] ") ||
-              (idx === 2 && "bg-[#B0FFC0] text-[#00BF26] ")
+              (idx === 1 &&
+                "bg-[#FFE6E6] text-[#FF0000] border border-[#FFB0B0] ") ||
+              (idx === 2 &&
+                "bg-[#E6FFEB] text-[#00BF26] border border-[#B0FFC0] ")
             }`}
           >
-            <h2 className="text-md font-[400] flex items-center gap-2">
-              {col.emoji} {col.title}
-            </h2>
+            <div className="text-md font-[400] flex items-center gap-2">
+              <img
+                src={col.emoji}
+                alt="icon"
+                className="w-5 h-5"
+                style={{
+                  filter:
+                    idx === 0
+                      ? "invert(16%) sepia(88%) saturate(6361%) hue-rotate(258deg) brightness(100%) contrast(101%)"
+                      : idx === 1
+                      ? "invert(18%) sepia(95%) saturate(5661%) hue-rotate(1deg) brightness(103%) contrast(102%)"
+                      : "invert(43%) sepia(86%) saturate(2832%) hue-rotate(95deg) brightness(97%) contrast(102%)",
+                }}
+              />
+
+              <p>{col.title} </p>
+            </div>
           </div>
           <Card />
           <Card />
