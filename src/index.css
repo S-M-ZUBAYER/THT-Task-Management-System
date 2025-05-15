@@ -204,3 +204,8 @@ button:focus-visible {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #6c9bb2;
 }
+
+.rdp-button_reset {
+  background-color: #f1f1f1;
+  text-align: center;
+}
