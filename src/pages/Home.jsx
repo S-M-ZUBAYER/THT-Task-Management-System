@@ -1,6 +1,6 @@
 import React from "react";
-import { EllipsisVertical } from "lucide-react";
 import icons from "@/constants/icons";
+import { Clock } from "@/components/svg/svg";
 
 const columns = [
   {
@@ -35,8 +35,9 @@ const Card = () => (
       Include a hero section, features block, testimonials, and CTA buttons.
       Collaborate with the content and marketing teams for copy and assets.
     </p>
-    <div className="text-sm text-red-500 font-medium">
-      🕒 Deadline: May 12, 2025
+    <div className="text-sm text-red-500 font-medium flex  items-center gap-1">
+      <Clock Stock="#6600FF" />
+      <p>Deadline: May 12, 2025</p>
     </div>
     <div className="flex -space-x-2">
       {[1, 2, 3, 4].map((_, i) => (

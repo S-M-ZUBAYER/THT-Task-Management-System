@@ -1,3 +1,5 @@
+import { Calendar } from "lucide-react";
+
 export const TaskListTable = () => {
   const tasks = [
     {
@@ -23,10 +25,20 @@ export const TaskListTable = () => {
       <div className="overflow-auto">
         <table className="w-full text-sm text-left">
           <thead className="text-muted-foreground border-b">
-            <tr>
+            <tr className="text-[#004368]">
               <th className="p-2">Name</th>
-              <th className="p-2">Start date</th>
-              <th className="p-2">End Date</th>
+              <th>
+                <div className="flex text-[#004368] justify-center items-center gap-1.5">
+                  <Calendar className="w-4 h-4 " />
+                  <p>Start date</p>
+                </div>
+              </th>
+              <th>
+                <div className="flex text-[#004368] justify-center items-center gap-1.5">
+                  <Calendar className="w-4 h-4" />
+                  <p>End Date</p>
+                </div>
+              </th>
               <th className="p-2">Assigned on</th>
               <th className="p-2">Resources</th>
               <th className="p-2">Status</th>
@@ -37,7 +49,7 @@ export const TaskListTable = () => {
               <tr key={i} className="border-b">
                 <td className="p-2">{t.name}</td>
                 <td className="p-2">{t.start}</td>
-                <td className="p-2">{t.end}</td>
+                <td className="pl-5">{t.end}</td>
                 <td className="p-2">
                   <div className="flex">
                     {[...Array(t.assigned)].map((_, i) => (

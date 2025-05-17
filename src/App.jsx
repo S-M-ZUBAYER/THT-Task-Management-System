@@ -9,6 +9,7 @@ import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import EmployeePage from "./pages/EmployeePage";
 import TaskPage from "./pages/TaskPage";
+import BugManagement from "./pages/BugManagement";
 
 const AppLayout = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="employees" element={<EmployeePage />} />
           <Route path="tasks" element={<TaskPage />} />
+          <Route path="bugs" element={<BugManagement />} />
         </Route>
       </Routes>
     </Router>
