@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import EmployeePage from "./pages/EmployeePage";
 import TaskPage from "./pages/TaskPage";
 import BugManagement from "./pages/BugManagement";
+import SingleTaskPage from "./pages/SingleTaskPage";
 
 const AppLayout = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="employees" element={<EmployeePage />} />
           <Route path="tasks" element={<TaskPage />} />
           <Route path="bugs" element={<BugManagement />} />
+          <Route path="task-details" element={<SingleTaskPage />} />
         </Route>
       </Routes>
     </Router>

@@ -8,6 +8,12 @@ import ToDo from "../assets/icons/to do.svg";
 import TaskProgress from "../assets/icons/task in progress.svg";
 import TaskDone from "../assets/icons/task done.svg";
 import ThreeDots from "../assets/icons/more-vertical-circle-01.svg";
+import Edit from "../assets/icons/edit.svg";
+import Delete from "../assets/icons/delete.svg";
+import manager from "../assets/icons/manager.svg";
+import Back from "../assets/icons/Back.svg";
+import FilePin from "../assets/icons/file-pin.svg";
+import Img from "../assets/icons/image.svg";
 
 export default {
   Dashboard,
@@ -20,4 +26,10 @@ export default {
   TaskProgress,
   TaskDone,
   ThreeDots,
+  Edit,
+  Delete,
+  manager,
+  Back,
+  FilePin,
+  Img,
 };
