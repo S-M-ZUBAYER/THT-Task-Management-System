@@ -83,11 +83,11 @@ export const CalendarPanel = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white rounded-lg border border-[#E6ECF0] ">
+      <div className="flex justify-between items-center mb-4 p-3 pr-6 ">
         <div
           onClick={prevMonth}
-          className="px-4 py-1 text-gray-600 hover:text-gray-800 border  border-[#004368]  rounded-md"
+          className="px-4 py-1 text-gray-600 hover:text-gray-800  border-[#004368]  rounded-md"
         >
           &lt;
         </div>
@@ -96,12 +96,12 @@ export const CalendarPanel = () => {
         </h2>
         <div
           onClick={nextMonth}
-          className="px-4 py-1 text-gray-600 hover:text-gray-800 border  border-[#004368]  rounded-md"
+          className="px-4 py-1 text-gray-600 hover:text-gray-800    rounded-md"
         >
           &gt;
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-2 text-center">
+      <div className="grid grid-cols-7 gap-2 text-center px-4">
         {dayNames.map((day, index) => (
           <div
             key={index}
