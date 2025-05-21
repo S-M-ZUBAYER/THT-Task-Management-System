@@ -14,6 +14,7 @@ import manager from "../assets/icons/manager.svg";
 import Back from "../assets/icons/Back.svg";
 import FilePin from "../assets/icons/file-pin.svg";
 import Img from "../assets/icons/image.svg";
+import TaskReport from "../assets/icons/TaskReport.svg";
 
 export default {
   Dashboard,
@@ -32,4 +33,5 @@ export default {
   Back,
   FilePin,
   Img,
+  TaskReport,
 };
