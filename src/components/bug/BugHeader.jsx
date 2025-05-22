@@ -1,12 +1,32 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export default function BugHeader() {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-      <h2 className="text-xl font-semibold text-gray-800">Bug Reports</h2>
-      <select className="mt-2 md:mt-0 border border-gray-300 rounded-md px-3 py-1 text-sm">
-        <option>1 week</option>
-        <option>2 weeks</option>
-        <option>1 month</option>
-      </select>
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-[#B0C5D0] pb-4">
+      <h2 className="text-xl font-semibold text-[#004368] ">Bug Reports</h2>
+      <Select defaultValue={"one week"}>
+        <SelectTrigger
+          style={{
+            backgroundColor: "transparent",
+            border: "1px solid #B0C5D0",
+            outline: "none",
+            boxShadow: "none",
+          }}
+        >
+          <SelectValue placeholder="Select status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="one week">1 Week</SelectItem>
+          <SelectItem value="Two Week">2 Week</SelectItem>
+          <SelectItem value="Three Week">3 Week</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

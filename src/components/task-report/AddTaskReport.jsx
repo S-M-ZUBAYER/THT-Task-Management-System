@@ -16,7 +16,7 @@ export function AddTaskReport() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
           <div className="relative p-4 w-full max-w-[40vw]">
-            <div className="relative bg-white rounded-lg shadow  dark:bg-gray-700">
+            <div className="relative bg-[#FFFFFF] rounded-lg shadow  dark:bg-gray-700 px-4">
               <div
                 onClick={() => setIsOpen(false)}
                 className="absolute top-3 right-3 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"

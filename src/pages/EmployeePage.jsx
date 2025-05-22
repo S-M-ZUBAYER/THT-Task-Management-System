@@ -1,7 +1,7 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
 import EmployeeCard from "@/components/employee/EmployeeCard";
+import { AddEmployeeDailog } from "@/components/employee/AddEmployeeDailog";
 
 const employeeData = Array(9).fill({
   name: "Golam Rabbani Pias",
@@ -13,7 +13,6 @@ const employeeData = Array(9).fill({
 });
 
 const EmployeePage = () => {
-  const navigate = useNavigate();
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -23,12 +22,7 @@ const EmployeePage = () => {
       </div>
 
       <div className="mt-10 flex justify-end">
-        <div
-          onClick={() => navigate("/add-employee", { replace: true })}
-          className="hover:bg-[#004368]  border-1 border-[#004368] text-[#004368] h-[44px] w-[300px] transition-all hover:text-white flex justify-center items-center rounded-sm font-semibold"
-        >
-          Add new Employee
-        </div>
+        <AddEmployeeDailog />
       </div>
     </div>
   );

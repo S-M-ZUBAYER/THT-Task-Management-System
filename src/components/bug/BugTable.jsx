@@ -1,4 +1,6 @@
 import BugTableRow from "./BugTableRow";
+import { Clock } from "../svg/svg";
+import icons from "@/constants/icons";
 
 const bugData = [
   {
@@ -24,17 +26,27 @@ const bugData = [
 
 export default function BugTable() {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-x-auto rounded-lg  ">
       <table className="w-full text-sm text-left text-gray-600">
-        <thead className="bg-gray-100 text-gray-700 text-sm font-semibold">
+        <thead className=" text-[#004368] text-sm ">
           <tr>
             <th className="px-4 py-3">Name</th>
-            <th className="px-4 py-3">Find date</th>
-            <th className="px-4 py-3">Solve date</th>
+            <th className="px-4 py-3 ">
+              <div className="flex items-center gap-2">
+                <img src={icons.Event} alt="icon" className="w-4 h-4" />
+                <p>Find date</p>
+              </div>
+            </th>
+            <th className="px-4 py-3 ">
+              <div className="flex items-center gap-2">
+                <img src={icons.Event} alt="icon" className="w-4 h-4" />
+                <p>Solve date</p>
+              </div>
+            </th>
             <th className="px-4 py-3">Solved by</th>
             <th className="px-4 py-3">Priority</th>
             <th className="px-4 py-3">Attachments</th>
-            <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3 pl-7">Status</th>
           </tr>
         </thead>
         <tbody>
