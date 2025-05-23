@@ -148,7 +148,15 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee email
                       </label>
-                      <Input type="email" {...register("email")} />
+                      <Input
+                        type="email"
+                        {...register("email")}
+                        style={{
+                          outline: "none",
+                          boxShadow: "none",
+                          color: "#004368",
+                        }}
+                      />
                       {errors.email && (
                         <p className="text-sm text-red-500">
                           {errors.email.message}
@@ -161,7 +169,15 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee Password
                       </label>
-                      <Input type="password" {...register("password")} />
+                      <Input
+                        type="password"
+                        {...register("password")}
+                        style={{
+                          outline: "none",
+                          boxShadow: "none",
+                          color: "#004368",
+                        }}
+                      />
                       {errors.password && (
                         <p className="text-sm text-red-500">
                           {errors.password.message}

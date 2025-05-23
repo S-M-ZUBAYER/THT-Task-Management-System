@@ -13,6 +13,7 @@ import BugManagement from "./pages/BugManagement";
 import SingleTaskPage from "./pages/SingleTaskPage";
 import TaskReport from "./pages/TaskReport";
 import BugDetailsPage from "./pages/BugDetailsPage";
+import SignInPage from "./pages/SignInPage";
 
 const AppLayout = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="bug-details" element={<BugDetailsPage />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Route>
+        <Route path="sign-in" element={<SignInPage />} />
       </Routes>
     </Router>
   );
