@@ -20,13 +20,20 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import icons from "@/constants/icons";
+import { axiosApi } from "@/lib/axiosApi";
+import toast from "react-hot-toast";
+import imageToBase64 from "@/lib/imageTobase64";
 
 const employeeSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   designation: z.string().min(1, "Designation is required"),
-  joinDate: z.date({ required_error: "Joining date is required" }),
+  phone: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number must be at most 15 digits"),
+  joiningDate: z.date({ required_error: "Joining date is required" }),
   image: z.any().optional(),
 });
 
@@ -46,20 +53,50 @@ export function AddEmployeeDailog() {
       name: "",
       email: "",
       password: "",
-      designation: "Software Engineer",
-      joinDate: new Date(),
+      phone: "",
+      image: null,
+      designation: "",
+      joiningDate: new Date(),
     },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const payload = {
+        ...data,
+        role: "user",
+        joiningDate: format(data.joiningDate, "yyyy-MM-dd"),
+      };
+      console.log(payload);
+      const res = await axiosApi.post("/register", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(res.data);
+
+      if (res.status === 200) {
+        toast.success("Employee added successfully");
+        setIsOpen(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error adding employee:", error);
+      toast.error("Failed to add employee");
+    }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setValue("image", file);
-      setPreview(URL.createObjectURL(file));
+      try {
+        const base64 = await imageToBase64(file);
+        setValue("image", base64);
+        setPreview(URL.createObjectURL(file));
+      } catch (err) {
+        console.error("Error converting image:", err);
+        toast.error("Failed to load image");
+      }
     }
   };
 
@@ -184,6 +221,26 @@ export function AddEmployeeDailog() {
                         </p>
                       )}
                     </div>
+                    {/*phone number*/}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Employee Phone Number
+                      </label>
+                      <Input
+                        type="text"
+                        {...register("phone")}
+                        style={{
+                          outline: "none",
+                          boxShadow: "none",
+                          color: "#004368",
+                        }}
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-500">
+                          {errors.phone.message}
+                        </p>
+                      )}
+                    </div>
 
                     {/* Designation */}
                     <div>
@@ -191,10 +248,11 @@ export function AddEmployeeDailog() {
                         Employee’s Designation
                       </label>
                       <Select
-                        onValueChange={(value) =>
-                          setValue("designation", value)
+                        onValueChange={(val) =>
+                          setValue("designation", val, {
+                            shouldValidate: true,
+                          })
                         }
-                        defaultValue="Software Engineer"
                       >
                         <SelectTrigger
                           style={{
@@ -240,16 +298,16 @@ export function AddEmployeeDailog() {
                               color: "#004368",
                             }}
                           >
-                            {watch("joinDate")
-                              ? format(watch("joinDate"), "dd MMM yyyy")
+                            {watch("joiningDate")
+                              ? format(watch("joiningDate"), "dd MMM yyyy")
                               : "Pick a date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
                           <Calendar
                             mode="single"
-                            selected={watch("joinDate")}
-                            onSelect={(date) => setValue("joinDate", date)}
+                            selected={watch("joiningDate")}
+                            onSelect={(date) => setValue("joiningDate", date)}
                           />
                         </PopoverContent>
                       </Popover>

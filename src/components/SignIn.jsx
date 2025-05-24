@@ -31,7 +31,7 @@ export default function Signin() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://grozziie.zjweiting.com:57683/tht/shopify/login",
+        "https://grozziie.zjweiting.com:57683/tht/taskManagement/api/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -39,10 +39,10 @@ export default function Signin() {
         }
       );
       const data = await res.json();
-      console.log(data.user);
+      console.log(data.result);
 
       if (res.ok && !data.error) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.result));
 
         toast.success("Login successful");
         navigate("/", { replace: true });
@@ -61,7 +61,12 @@ export default function Signin() {
   return (
     <div className=" flex justify-center items-center  text-[#004368] ">
       <div className=" space-x-5 p-10 rounded-2xl lg:w-[30vw] w-[90vw]">
-        <h1 className="lg:text-[3vw] text-[5vw] font-bold ">Log In</h1>
+        <div className="font-[400] text-[24px]">
+          <p>Let’s get started</p>
+          <p>
+            <strong>log in</strong> to your account
+          </p>
+        </div>
         <div className="pt-10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

@@ -52,7 +52,7 @@ const FileInput = ({ label, icon, onChange, accept }) => (
   </label>
 );
 
-const AddBug = () => {
+const AddTask = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ const AddBug = () => {
     defaultValues: {
       details: "",
       date: new Date(),
-      priority: "Medium",
+      priority: "",
       solvers: [],
       fileAttachment: null,
       imageAttachment: null,
@@ -384,4 +384,4 @@ const AddBug = () => {
   );
 };
 
-export default AddBug;
+export default AddTask;
