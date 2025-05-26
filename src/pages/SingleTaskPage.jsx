@@ -27,7 +27,7 @@ const SingleTaskPage = () => {
           <TaskHeader />
           <TaskDetails />
           <div>
-            <h3 className="font-semibold mb-2 text-[#004368] ">Time</h3>
+            <h3 className="font-semibold mb-2 text-[#004368]">Time</h3>
             <div className="text-sm text-gray-600 flex gap-4">
               <div className="flex items-center gap-2">
                 <Clock Stock={"#202020"} />

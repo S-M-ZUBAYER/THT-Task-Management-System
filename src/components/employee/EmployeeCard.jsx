@@ -1,20 +1,18 @@
 import { Calendar, Mail, Phone, User } from "lucide-react";
 import EmployeeDropDown from "./EmployeeDropDown";
 
-function EmployeeCard({ employee }) {
+function EmployeeCard({ employee, show }) {
   return (
     <div className="border border-[#f0f0f0] rounded-xl shadow-sm hover:shadow-lg hover:bg-[#F9F5FF] hover:border-[#D0B0FF] transition-all duration-300 ease-in-out hover:scale-105 bg-white w-[25vw] p-8">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
           <img
-            src={employee.avatar}
+            src={employee.image}
             alt={employee.name}
             className="w-10 h-10 rounded-full object-cover"
           />
         </div>
-        <span className="text-gray-400 text-xl">
-          <EmployeeDropDown />{" "}
-        </span>
+        {show && <EmployeeDropDown />}
       </div>
 
       <div>

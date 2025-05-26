@@ -22,7 +22,7 @@ import { format } from "date-fns";
 import icons from "@/constants/icons";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
-import imageToBase64 from "@/lib/imageTobase64";
+import { CalendarDaysIcon } from "lucide-react";
 
 const employeeSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -40,6 +40,7 @@ const employeeSchema = z.object({
 export function AddEmployeeDailog() {
   const [isOpen, setIsOpen] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -62,20 +63,20 @@ export function AddEmployeeDailog() {
 
   const onSubmit = async (data) => {
     try {
+      setIsLoading(true);
       const payload = {
         ...data,
         role: "user",
         joiningDate: format(data.joiningDate, "yyyy-MM-dd"),
       };
-      console.log(payload);
-      const res = await axiosApi.post("/register", payload, {
+      const res = await axiosApi.post("/user/register", payload, {
         headers: {
           "Content-Type": "application/json",
         },
       });
       console.log(res.data);
 
-      if (res.status === 200) {
+      if (res.status === 201) {
         toast.success("Employee added successfully");
         setIsOpen(false);
         window.location.reload();
@@ -83,6 +84,8 @@ export function AddEmployeeDailog() {
     } catch (error) {
       console.error("Error adding employee:", error);
       toast.error("Failed to add employee");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,8 +93,7 @@ export function AddEmployeeDailog() {
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64 = await imageToBase64(file);
-        setValue("image", base64);
+        setValue("image", file);
         setPreview(URL.createObjectURL(file));
       } catch (err) {
         console.error("Error converting image:", err);
@@ -298,6 +300,7 @@ export function AddEmployeeDailog() {
                               color: "#004368",
                             }}
                           >
+                            <CalendarDaysIcon className="mr-2 h-4 w-4" />
                             {watch("joiningDate")
                               ? format(watch("joiningDate"), "dd MMM yyyy")
                               : "Pick a date"}
@@ -327,7 +330,7 @@ export function AddEmployeeDailog() {
                         outline: "none",
                       }}
                     >
-                      Add Employee
+                      {isLoading ? "Adding..." : "Add Employee"}
                     </Button>
                   </form>
                 </div>

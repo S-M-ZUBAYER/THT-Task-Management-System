@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Search } from "lucide-react";
-import { base64ToImage } from "@/lib/base64Toimage";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  const imageUrl = base64ToImage(user?.image) || "https://i.pravatar.cc/300";
+  let imageUrl = "";
+  if (!user) {
+    imageUrl = "https://i.pravatar.cc/300";
+  } else if (user?.image) {
+    imageUrl = user.image;
+  }
   const handleShow = () => {
     setShow(!show);
   };

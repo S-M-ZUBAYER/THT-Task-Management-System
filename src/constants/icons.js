@@ -16,6 +16,7 @@ import FilePin from "../assets/icons/file-pin.svg";
 import Img from "../assets/icons/image.svg";
 import TaskReport from "../assets/icons/TaskReport.svg";
 import Login from "../assets/icons/Login.svg";
+import Docx from "../assets/icons8-docx-64.png";
 
 export default {
   Dashboard,
@@ -36,4 +37,5 @@ export default {
   Img,
   TaskReport,
   Login,
+  Docx,
 };

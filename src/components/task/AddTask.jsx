@@ -1,18 +1,10 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { gsap } from "gsap";
-import { CalendarIcon, X, Plus } from "lucide-react";
-import { format } from "date-fns";
+import { X, Plus } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectTrigger,
@@ -20,56 +12,55 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import icons from "@/constants/icons";
+import { Input } from "../ui/input";
+
+import DatePicker from "../DatePicker";
+import { axiosApi } from "@/lib/axiosApi";
+import toast from "react-hot-toast";
 
 const schema = z.object({
-  details: z.string().min(3, "Bug details required"),
-  date: z.date({ required_error: "Date is required" }),
-  priority: z.enum(["Low", "Medium", "High"]),
-  solvers: z.array(z.string()).optional(),
-  fileAttachment: z.any().optional(),
-  imageAttachment: z.any().optional(),
+  task_title: z.string().min(3, "Task title is required"),
+  task_details: z.string().min(3, "Bug details required"),
+  task_starting_time: z.date({ required_error: "Date is required" }),
+  task_deadline: z.date({ required_error: "Deadline is required" }),
+  status: z.enum(["To Do", "In Progress", "Completed"]),
+  assigned_employee_ids: z.array(z.string()).optional(),
 });
-
-const solversData = [
-  { id: 1, src: "https://i.pravatar.cc/150?img=joy" },
-  { id: 2, src: "https://i.pravatar.cc/150?img=moy" },
-  { id: 3, src: "https://i.pravatar.cc/150?img=zoy" },
-  { id: 4, src: "https://i.pravatar.cc/150" },
-];
-
-const FileInput = ({ label, icon, onChange, accept }) => (
-  <label className="flex items-center gap-2 border border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
-    <img src={icon} alt={`${label} icon`} className="w-5 h-5" />
-    <span className="text-sm text-gray-700">{label}</span>
-    <input
-      type="file"
-      accept={accept}
-      onChange={onChange}
-      className="hidden"
-      aria-label={label}
-    />
-  </label>
-);
 
 const AddTask = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [solvers, setSolvers] = useState([]);
-  const [fileAttachment, setFileAttachment] = useState(null);
-  const [imageAttachment, setImageAttachment] = useState(null);
+  const [solversData, setSolversData] = useState([]);
   const modalRef = useRef(null);
+
+  useEffect(() => {
+    const fetchSolvers = async () => {
+      try {
+        const response = await axiosApi.get("/users/getAll");
+        const data = response.data.result.map((employee) => ({
+          id: employee.id,
+          src: employee.image || "/default-profile.png",
+        }));
+        setSolversData(data);
+      } catch (error) {
+        console.error("Failed to fetch solvers:", error);
+        toast.error("Failed to load solvers. Please try again later.");
+      }
+    };
+    fetchSolvers();
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      details: "",
-      date: new Date(),
-      priority: "",
-      solvers: [],
-      fileAttachment: null,
-      imageAttachment: null,
+      task_title: "",
+      task_details: "",
+      task_starting_time: new Date(),
+      task_deadline: undefined,
+      status: "To Do",
+      assigned_employee_ids: [],
     },
   });
 
@@ -95,24 +86,24 @@ const AddTask = () => {
     }
   }, [isOpen]);
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     try {
       setIsLoading(true);
       const submissionData = {
         ...values,
-        solvers,
-        fileAttachment: fileAttachment?.name || null,
-        imageAttachment: imageAttachment?.name || null,
-        date: format(values.date, "yyyy-MM-dd"),
+        task_starting_time: values.task_starting_time.toISOString(),
+        task_deadline: values.task_deadline.toISOString(),
+        task_completing_date: null,
+        assigned_employee_ids: solvers,
       };
-      console.log("✅ Bug Details Submitted:", submissionData);
+      await axiosApi.post("/tasks/Create", submissionData);
       toggleModal();
       form.reset();
       setSolvers([]);
-      setFileAttachment(null);
-      setImageAttachment(null);
+      toast.success("Task created successfully!");
     } catch (error) {
       console.log(error);
+      toast.error("Failed to create task. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +121,7 @@ const AddTask = () => {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50 ">
           <div
             ref={modalRef}
             className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xl relative space-y-6"
@@ -144,85 +135,78 @@ const AddTask = () => {
             </div>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Bug Details */}
+              {/* Task Title */}
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Project name
+                </label>
+                <Input
+                  {...form.register("task_title")}
+                  style={{
+                    outline: "none",
+                    boxShadow: "none",
+                    color: "#004368",
+                  }}
+                />
+                {form.formState.errors.task_title && (
+                  <p className="text-sm text-red-500">
+                    {form.formState.errors.task_title.message}
+                  </p>
+                )}
+              </div>
+
+              {/* task Details */}
               <div>
                 <label
                   htmlFor="details"
                   className="block font-medium text-gray-700"
                 >
-                  Bug Details
+                  Project Requirements
                 </label>
                 <textarea
-                  id="details"
+                  id="task_details"
                   rows={4}
-                  {...form.register("details")}
+                  {...form.register("task_details")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Describe the bug..."
+                  placeholder="project requirements here..."
                 />
-                {form.formState.errors.details && (
+                {form.formState.errors.task_details && (
                   <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.details.message}
+                    {form.formState.errors.task_details.message}
                   </p>
                 )}
               </div>
+              {/* Date */}
 
-              {/* Find Date */}
-              <div>
-                <label
-                  htmlFor="date"
-                  className="block font-medium text-gray-700"
-                >
-                  Find Date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div
-                      id="date"
-                      className={cn(
-                        "w-full mt-1 p-2 border border-[#B0C5D0] rounded-md flex items-center justify-between text-left focus:ring-2 focus:ring-[#004368] focus:border-[#004368]"
-                      )}
-                    >
-                      <span className="text-gray-700">
-                        {form.watch("date")
-                          ? format(form.watch("date"), "dd MMM yyyy")
-                          : "Pick a date"}
-                      </span>
-                      <CalendarIcon
-                        className="w-4 h-4 text-gray-500"
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={form.watch("date")}
-                      onSelect={(value) =>
-                        form.setValue("date", value, { shouldValidate: true })
-                      }
-                      initialFocus
-                      className={"bg-white rounded-md shadow-lg p-4"}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {form.formState.errors.date && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.date.message}
-                  </p>
-                )}
+              <div className="flex gap-4 w-full">
+                <div className="w-1/2">
+                  <DatePicker
+                    form={form}
+                    name="task_starting_time"
+                    label="Start Date"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <DatePicker
+                    form={form}
+                    name="task_deadline"
+                    label="End Date"
+                  />
+                </div>
               </div>
 
               {/* Priority */}
               <div>
                 <label
-                  htmlFor="priority"
+                  htmlFor="status"
                   className="block font-medium text-gray-700"
                 >
-                  Priority
+                  Status
                 </label>
                 <Select
+                  value={form.watch("status")}
                   onValueChange={(val) =>
-                    form.setValue("priority", val, { shouldValidate: true })
+                    form.setValue("status", val, { shouldValidate: true })
                   }
                 >
                   <SelectTrigger
@@ -237,19 +221,20 @@ const AddTask = () => {
                       boxShadow: "none",
                     }}
                   >
-                    <SelectValue placeholder="Select priority" />
+                    <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Low">Low</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="To Do">To Do</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Bug Solver */}
               <div>
-                <h4 className="font-medium text-gray-700">Bug Solver</h4>
+                <h4 className="font-medium text-gray-700">Assign task to</h4>
+
                 {!showSolvers ? (
                   <div className="flex items-center gap-2 mt-2">
                     {solvers.length === 0 ? (
@@ -257,18 +242,24 @@ const AddTask = () => {
                         No solvers selected
                       </p>
                     ) : (
-                      solvers.map((src, idx) => (
-                        <img
-                          key={idx}
-                          src={src}
-                          alt={`Selected solver ${idx + 1}`}
-                          className="w-8 h-8 rounded-full border border-gray-300"
-                        />
-                      ))
+                      solvers.map((id, idx) => {
+                        const solver = solversData.find((s) => s.id === id);
+                        if (!solver) return null;
+
+                        return (
+                          <img
+                            key={idx}
+                            src={solver.src}
+                            alt={`Selected solver ${idx + 1}`}
+                            className="w-8 h-8 rounded-full border border-gray-300"
+                          />
+                        );
+                      })
                     )}
+
                     <div
                       onClick={() => setShowSolvers(true)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors cursor-pointer"
                       aria-label="Add solvers"
                     >
                       <Plus
@@ -287,16 +278,15 @@ const AddTask = () => {
                           className="w-8 h-8 rounded-full border border-gray-300"
                         />
                         <input
-                          id={`default-checkbox-${solver.id}`}
+                          id={`checkbox-${solver.id}`}
                           type="checkbox"
-                          value=""
-                          className="w-4 h-4 text-red-600 bg-red-500 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2"
-                          checked={solvers.includes(solver.src)}
+                          className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded-sm focus:ring-blue-500"
+                          checked={solvers.includes(solver.id)}
                           onChange={(e) => {
                             setSolvers((prev) =>
                               e.target.checked
-                                ? [...prev, solver.src]
-                                : prev.filter((src) => src !== solver.src)
+                                ? [...prev, solver.id]
+                                : prev.filter((id) => id !== solver.id)
                             );
                           }}
                         />
@@ -310,34 +300,6 @@ const AddTask = () => {
                     >
                       Done
                     </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Attachments */}
-              <div>
-                <h4 className="font-medium text-gray-700">Bug Attachments</h4>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <FileInput
-                    label="Discussion files"
-                    icon={icons.FilePin}
-                    onChange={(e) => setFileAttachment(e.target.files[0])}
-                  />
-                  <FileInput
-                    label="Discussion Pictures"
-                    icon={icons.Img}
-                    accept="image/*"
-                    onChange={(e) => setImageAttachment(e.target.files[0])}
-                  />
-                </div>
-                {(fileAttachment || imageAttachment) && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    {fileAttachment && (
-                      <p>Attached file: {fileAttachment.name}</p>
-                    )}
-                    {imageAttachment && (
-                      <p>Attached image: {imageAttachment.name}</p>
-                    )}
                   </div>
                 )}
               </div>

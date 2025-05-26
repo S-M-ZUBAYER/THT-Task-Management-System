@@ -1,18 +1,11 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { gsap } from "gsap";
-import { CalendarIcon, X, Plus } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { format } from "date-fns";
 
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectTrigger,
@@ -21,22 +14,19 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import icons from "@/constants/icons";
+import toast from "react-hot-toast";
+import { axiosApi } from "@/lib/axiosApi";
+import DatePicker from "../DatePicker";
 
 const schema = z.object({
-  details: z.string().min(3, "Bug details required"),
-  date: z.date({ required_error: "Date is required" }),
+  projectName: z.string().min(3, "Project details required"),
+  BugDetails: z.string().min(3, "Bug details required"),
+  findDate: z.date({ required_error: "Date is required" }),
   priority: z.enum(["Low", "Medium", "High"]),
-  solvers: z.array(z.string()).optional(),
+  assignWith: z.array(z.string()).optional(),
   fileAttachment: z.any().optional(),
   imageAttachment: z.any().optional(),
 });
-
-const solversData = [
-  { id: 1, src: "https://i.pravatar.cc/150?img=joy" },
-  { id: 2, src: "https://i.pravatar.cc/150?img=moy" },
-  { id: 3, src: "https://i.pravatar.cc/150?img=zoy" },
-  { id: 4, src: "https://i.pravatar.cc/150" },
-];
 
 const FileInput = ({ label, icon, onChange, accept }) => (
   <label className="flex items-center gap-2 border border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
@@ -57,16 +47,35 @@ const AddBug = () => {
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [solvers, setSolvers] = useState([]);
+  const [solversData, setSolversData] = useState([]);
   const [fileAttachment, setFileAttachment] = useState(null);
   const [imageAttachment, setImageAttachment] = useState(null);
   const modalRef = useRef(null);
 
+  useEffect(() => {
+    const fetchSolvers = async () => {
+      try {
+        const response = await axiosApi.get("/users/getAll");
+        const data = response.data.result.map((employee) => ({
+          id: employee.id,
+          src: employee.image || "/default-profile.png",
+        }));
+        setSolversData(data);
+      } catch (error) {
+        console.error("Failed to fetch solvers:", error);
+        toast.error("Failed to load solvers. Please try again later.");
+      }
+    };
+    fetchSolvers();
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      details: "",
-      date: new Date(),
-      priority: "Medium",
+      projectName: "",
+      BugDetails: "",
+      findDate: new Date(),
+      priority: "",
       solvers: [],
       fileAttachment: null,
       imageAttachment: null,
@@ -130,7 +139,7 @@ const AddBug = () => {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
           <div
             ref={modalRef}
             className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xl relative space-y-6"
@@ -167,50 +176,7 @@ const AddBug = () => {
               </div>
 
               {/* Find Date */}
-              <div>
-                <label
-                  htmlFor="date"
-                  className="block font-medium text-gray-700"
-                >
-                  Find Date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div
-                      id="date"
-                      className={cn(
-                        "w-full mt-1 p-2 border border-[#B0C5D0] rounded-md flex items-center justify-between text-left focus:ring-2 focus:ring-[#004368] focus:border-[#004368]"
-                      )}
-                    >
-                      <span className="text-gray-700">
-                        {form.watch("date")
-                          ? format(form.watch("date"), "dd MMM yyyy")
-                          : "Pick a date"}
-                      </span>
-                      <CalendarIcon
-                        className="w-4 h-4 text-gray-500"
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={form.watch("date")}
-                      onSelect={(value) =>
-                        form.setValue("date", value, { shouldValidate: true })
-                      }
-                      initialFocus
-                      className={"bg-white rounded-md shadow-lg p-4"}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {form.formState.errors.date && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.date.message}
-                  </p>
-                )}
-              </div>
+              <DatePicker form={form} name="findDate" label="Find Date" />
 
               {/* Priority */}
               <div>
@@ -249,7 +215,8 @@ const AddBug = () => {
 
               {/* Bug Solver */}
               <div>
-                <h4 className="font-medium text-gray-700">Bug Solver</h4>
+                <h4 className="font-medium text-gray-700">Assign task to</h4>
+
                 {!showSolvers ? (
                   <div className="flex items-center gap-2 mt-2">
                     {solvers.length === 0 ? (
@@ -257,18 +224,24 @@ const AddBug = () => {
                         No solvers selected
                       </p>
                     ) : (
-                      solvers.map((src, idx) => (
-                        <img
-                          key={idx}
-                          src={src}
-                          alt={`Selected solver ${idx + 1}`}
-                          className="w-8 h-8 rounded-full border border-gray-300"
-                        />
-                      ))
+                      solvers.map((id, idx) => {
+                        const solver = solversData.find((s) => s.id === id);
+                        if (!solver) return null;
+
+                        return (
+                          <img
+                            key={idx}
+                            src={solver.src}
+                            alt={`Selected solver ${idx + 1}`}
+                            className="w-8 h-8 rounded-full border border-gray-300"
+                          />
+                        );
+                      })
                     )}
+
                     <div
                       onClick={() => setShowSolvers(true)}
-                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                      className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors cursor-pointer"
                       aria-label="Add solvers"
                     >
                       <Plus
@@ -287,16 +260,15 @@ const AddBug = () => {
                           className="w-8 h-8 rounded-full border border-gray-300"
                         />
                         <input
-                          id={`default-checkbox-${solver.id}`}
+                          id={`checkbox-${solver.id}`}
                           type="checkbox"
-                          value=""
-                          className="w-4 h-4 text-red-600 bg-red-500 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2"
-                          checked={solvers.includes(solver.src)}
+                          className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded-sm focus:ring-blue-500"
+                          checked={solvers.includes(solver.id)}
                           onChange={(e) => {
                             setSolvers((prev) =>
                               e.target.checked
-                                ? [...prev, solver.src]
-                                : prev.filter((src) => src !== solver.src)
+                                ? [...prev, solver.id]
+                                : prev.filter((id) => id !== solver.id)
                             );
                           }}
                         />
