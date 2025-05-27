@@ -1,4 +1,5 @@
 import { Calendar } from "lucide-react";
+import AddTask from "./AddTask";
 
 export const TaskListTable = () => {
   const tasks = [
@@ -21,8 +22,11 @@ export const TaskListTable = () => {
 
   return (
     <div className="bg-white rounded-xl border p-4">
-      <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
-      <div className="overflow-auto">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
+        <AddTask />
+      </div>
+      <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">
         <table className="w-full text-sm text-left">
           <thead className="text-muted-foreground border-b">
             <tr className="text-[#004368]">

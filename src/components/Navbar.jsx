@@ -5,6 +5,13 @@ import { Bell, Search } from "lucide-react";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  let imageUrl = "";
+  if (!user) {
+    imageUrl = "https://i.pravatar.cc/300";
+  } else if (user?.image) {
+    imageUrl = user.image;
+  }
   const handleShow = () => {
     setShow(!show);
   };
@@ -32,7 +39,7 @@ const Navbar = () => {
       </div>
       <div className="flex items-center gap-4">
         <Avatar>
-          <AvatarImage src="https://i.pravatar.cc/300" />
+          <AvatarImage src={imageUrl} />
         </Avatar>
         <p className="font-semibold">
           Hello! <span className="text-blue-600">Sultan</span>

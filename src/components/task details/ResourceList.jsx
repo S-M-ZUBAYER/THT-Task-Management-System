@@ -1,7 +1,12 @@
+import UploaderModal from "./UploaderModal";
+
 const ResourceList = ({ title, items }) => {
   return (
     <div className="p-4 border rounded-xl space-y-2">
-      <h3 className="font-semibold text-blue-900">{title}</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-semibold text-blue-900">{title}</h3>
+        <UploaderModal />
+      </div>
       {items.map(({ name, date }, idx) => (
         <div
           key={idx}

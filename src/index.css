@@ -209,3 +209,15 @@ button:focus-visible {
   background-color: #f1f1f1;
   text-align: center;
 }
+
+/*svg roller */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-fast {
+  animation: spin 2s linear infinite;
+}

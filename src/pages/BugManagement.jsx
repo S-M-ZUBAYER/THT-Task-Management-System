@@ -79,7 +79,6 @@ const BugManagement = () => {
       <p className="text-[28px] font-semibold leading-[150%] text-[#004368] font-poppins mb-6">
         Bug’s & Solutions
       </p>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {bugsList.map((bugData, index) => (
           <BugCard key={index} {...bugData} />

@@ -6,7 +6,6 @@ import TaskCardProvider from "@/components/task/TaskCardProvider";
 export default function TaskPage() {
   return (
     <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 px-[5vw] ">
-      {/* Task Cards */}
       <div className="col-span-2">
         <TaskCardProvider />
 
@@ -14,8 +13,6 @@ export default function TaskPage() {
           <TaskListTable />
         </div>
       </div>
-
-      {/* Sidebar */}
       <div className="space-y-6">
         <CalendarPanel />
         <ResourcesPanel />

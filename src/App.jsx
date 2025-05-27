@@ -11,6 +11,9 @@ import EmployeePage from "./pages/EmployeePage";
 import TaskPage from "./pages/TaskPage";
 import BugManagement from "./pages/BugManagement";
 import SingleTaskPage from "./pages/SingleTaskPage";
+import TaskReport from "./pages/TaskReport";
+import BugDetailsPage from "./pages/BugDetailsPage";
+import SignInPage from "./pages/SignInPage";
 
 const AppLayout = () => {
   return (
@@ -36,7 +39,11 @@ const App = () => {
           <Route path="tasks" element={<TaskPage />} />
           <Route path="bugs" element={<BugManagement />} />
           <Route path="task-details" element={<SingleTaskPage />} />
+          <Route path="task-report" element={<TaskReport />} />
+          <Route path="bug-details" element={<BugDetailsPage />} />
+          <Route path="*" element={<div>404 Not Found</div>} />
         </Route>
+        <Route path="sign-in" element={<SignInPage />} />
       </Routes>
     </Router>
   );
