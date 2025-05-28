@@ -212,12 +212,11 @@ button:focus-visible {
 
 /*svg roller */
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes drawFullCircle {
+  0% {
+    stroke-dashoffset: 100%;
   }
-}
-
-.spin-fast {
-  animation: spin 2s linear infinite;
+  100% {
+    stroke-dashoffset: 0%;
+  }
 }

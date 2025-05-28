@@ -1,30 +1,11 @@
 import BugTableRow from "./BugTableRow";
-import { Clock } from "../svg/svg";
 import icons from "@/constants/icons";
-
-const bugData = [
-  {
-    name: "App not responding",
-    findDate: "20 May 2025",
-    solveDate: "25 May 2025",
-    solvedBy: ["👤", "👥", "🧑‍💻"],
-    priority: "Urgent",
-    attachment: "Bug report",
-    status: "Solved",
-  },
-  {
-    name: "Login issues",
-    findDate: "21 May 2025",
-    solveDate: "26 May 2025",
-    solvedBy: ["👤", "👥", "🧑‍💻"],
-    priority: "High",
-    attachment: "Bug report",
-    status: "In progress",
-  },
-  // Add more bugs here...
-];
+import { useBugStore } from "@/Zustand";
 
 export default function BugTable() {
+  const { bugs } = useBugStore();
+  console.log(bugs);
+
   return (
     <div className="overflow-x-auto rounded-lg  ">
       <table className="w-full text-sm text-left text-gray-600">
@@ -50,9 +31,15 @@ export default function BugTable() {
           </tr>
         </thead>
         <tbody>
-          {bugData.map((bug, index) => (
-            <BugTableRow key={index} {...bug} />
-          ))}
+          {bugs.length === 0 ? (
+            <tr>
+              <td colSpan="7" className="text-center py-4">
+                No bugs found.
+              </td>
+            </tr>
+          ) : (
+            bugs.map((bug) => <BugTableRow key={bug.id} bug={bug} />)
+          )}
         </tbody>
       </table>
     </div>

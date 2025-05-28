@@ -17,6 +17,7 @@ import Img from "../assets/icons/image.svg";
 import TaskReport from "../assets/icons/TaskReport.svg";
 import Login from "../assets/icons/Login.svg";
 import Docx from "../assets/icons8-docx-64.png";
+import Download from "../assets/icons/download-square-01.svg";
 
 export default {
   Dashboard,
@@ -38,4 +39,5 @@ export default {
   TaskReport,
   Login,
   Docx,
+  Download,
 };

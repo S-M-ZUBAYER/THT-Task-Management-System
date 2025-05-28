@@ -12,19 +12,24 @@ function UploaderModal() {
       requestAnimationFrame(() => {
         gsap.fromTo(
           modalRef.current,
-          { opacity: 0, y: 50, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "power2.out" }
+          { opacity: 0, scale: 0.95 },
+          { opacity: 1, scale: 1, duration: 0.9, ease: "power2.out" }
         );
       });
     } else {
-      gsap.to(modalRef.current, {
-        opacity: 0,
-        y: 50,
-        scale: 0.95,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: () => setIsOpen(false),
-      });
+      gsap.fromTo(
+        modalRef.current,
+        {
+          opacity: 1,
+          scale: 1,
+        },
+        {
+          opacity: 0,
+          duration: 0.3,
+          ease: "back.out",
+          onComplete: () => setIsOpen(false),
+        }
+      );
     }
   }, [isOpen]);
   return (

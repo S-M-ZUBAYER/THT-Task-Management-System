@@ -49,6 +49,10 @@ const Sidebar = () => {
             outline: "none",
             color: "#BDBDBD",
           }}
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.href = "/sign-in";
+          }}
         >
           <img src={icons.LogOut} alt="log out" className="w-5" /> Log out
         </Button>
