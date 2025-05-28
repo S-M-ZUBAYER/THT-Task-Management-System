@@ -1,11 +1,19 @@
 import React from "react";
 import { Plus } from "lucide-react";
-import BugIcon from "@/assets/svg/bug-01.svg?react";
-import BugIconTwo from "@/assets/svg/bug-02.svg?react";
+import { useNavigate } from "react-router-dom";
 
-const BugCard = ({ bugs, name, findDate, solveDate }) => {
+const BugCard = ({ bugs, bugProjectName, id }) => {
+  const navigate = useNavigate();
+  const handleBugClick = () => {
+    navigate("/bug-details", {
+      state: { id, bugProjectName, bugs },
+    });
+  };
   return (
-    <div className="border-2 border-[#E8D9FF] rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between h-auto">
+    <div
+      className="border-2 border-[#E8D9FF] rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between h-auto"
+      onClick={handleBugClick}
+    >
       <div>
         <div className=" flex justify-between items-center">
           <div className="flex items-center justify-center gap-2">
@@ -16,35 +24,16 @@ const BugCard = ({ bugs, name, findDate, solveDate }) => {
             <Plus className="text-[#004368] " />
           </div>
         </div>
-        <h2 className="text-lg font-semibold mb-1 mt-6">Project name</h2>
-        <ul className="text-sm text-gray-700 list-decimal list-inside mb-4 line-clamp-4">
-          {bugs.map((bug, index) => (
-            <li key={index}>{bug}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-4">
-          <img
-            src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${name}`}
-            alt={name}
-            className="w-7 h-7 rounded-full"
-          />
-          <p className="text-sm font-medium">{name}</p>
-        </div>
-
-        <div className="flex gap-2 text-[0.6vw]">
-          <div className="flex items-center gap-1 border border-[#FFE6E6] text-red-600 px-2 py-1 rounded-full">
-            <BugIcon className="w-3 h-3 text-red-600" />
-            <span>Found at {findDate}</span>
-          </div>
-
-          <div className="flex items-center gap-1 border border-[#F0E6FF] text-[#D0B0FF] px-2 py-1 rounded-full">
-            <BugIconTwo className="w-3 h-3 text-[#D0B0FF]" />
-            <span>Solved at {solveDate}</span>
-          </div>
-        </div>
+        <h2 className="text-lg font-semibold mb-1 mt-6">{bugProjectName} </h2>
+        {bugs.length > 0 ? (
+          <ul className="text-sm text-gray-700 list-decimal list-inside mb-4 line-clamp-4">
+            {bugs.map(({ BugDetails }, index) => (
+              <li key={index}>{BugDetails}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500">No bugs reported yet.</p>
+        )}
       </div>
     </div>
   );

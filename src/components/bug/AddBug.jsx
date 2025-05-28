@@ -4,7 +4,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { gsap } from "gsap";
 import { X, Plus } from "lucide-react";
-import { format } from "date-fns";
 
 import {
   Select,
@@ -17,15 +16,24 @@ import icons from "@/constants/icons";
 import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
+import { useBugStore } from "@/Zustand";
 
 const schema = z.object({
-  projectName: z.string().min(3, "Project details required"),
   BugDetails: z.string().min(3, "Bug details required"),
   findDate: z.date({ required_error: "Date is required" }),
   priority: z.enum(["Low", "Medium", "High"]),
   assignWith: z.array(z.string()).optional(),
-  fileAttachment: z.any().optional(),
-  imageAttachment: z.any().optional(),
+  fileAttachment: z
+    .any()
+    .optional()
+    .refine(
+      (file) => !file || file.size <= 5 * 1024 * 1024,
+      "File size must be less than 5MB"
+    )
+    .refine(
+      (file) => !file || ["application/pdf", "text/plain"].includes(file.type),
+      "Only PDF or text files are allowed"
+    ),
 });
 
 const FileInput = ({ label, icon, onChange, accept }) => (
@@ -49,21 +57,27 @@ const AddBug = () => {
   const [solvers, setSolvers] = useState([]);
   const [solversData, setSolversData] = useState([]);
   const [fileAttachment, setFileAttachment] = useState(null);
-  const [imageAttachment, setImageAttachment] = useState(null);
   const modalRef = useRef(null);
+  const { bugs } = useBugStore();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const fetchSolvers = async () => {
       try {
         const response = await axiosApi.get("/users/getAll");
-        const data = response.data.result.map((employee) => ({
-          id: employee.id,
-          src: employee.image || "/default-profile.png",
-        }));
-        setSolversData(data);
+        if (response.status === 200 && response.data.result) {
+          const data = response.data.result.map((employee) => ({
+            id: employee.id,
+            src: employee.image || "/default-profile.png",
+          }));
+          setSolversData(data);
+        } else {
+          throw new Error("Invalid response from server");
+        }
       } catch (error) {
         console.error("Failed to fetch solvers:", error);
         toast.error("Failed to load solvers. Please try again later.");
+        setSolversData([]);
       }
     };
     fetchSolvers();
@@ -72,13 +86,11 @@ const AddBug = () => {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      projectName: "",
       BugDetails: "",
       findDate: new Date(),
-      priority: "",
+      priority: "Medium",
       solvers: [],
       fileAttachment: null,
-      imageAttachment: null,
     },
   });
 
@@ -104,24 +116,47 @@ const AddBug = () => {
     }
   }, [isOpen]);
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const submissionData = {
-        ...values,
-        solvers,
-        fileAttachment: fileAttachment?.name || null,
-        imageAttachment: imageAttachment?.name || null,
-        date: format(values.date, "yyyy-MM-dd"),
-      };
-      console.log("✅ Bug Details Submitted:", submissionData);
-      toggleModal();
-      form.reset();
-      setSolvers([]);
-      setFileAttachment(null);
-      setImageAttachment(null);
+      const bugInfo = bugs[0];
+      if (
+        !bugInfo ||
+        !bugInfo.projectName ||
+        !bugInfo.id ||
+        !bugInfo.createdEmail
+      ) {
+        throw new Error("Bug store data is incomplete");
+      }
+
+      const formData = new FormData();
+      formData.append("projectName", "jfdslkfjsdlkfjsdlfj");
+      formData.append("BugDetails", values.BugDetails);
+      formData.append("findDate", "");
+      formData.append("priority", values.priority);
+      formData.append("status", "Pending");
+      formData.append("assignWith", JSON.stringify(solvers));
+      formData.append("bugProjectId", bugInfo.id);
+      formData.append("createdEmail", user.email);
+      if (fileAttachment) formData.append("attachmentFile", fileAttachment);
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+
+      const res = await axiosApi.post("/bug/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (res.status === 201) {
+        toast.success("Bug reported successfully!");
+        toggleModal();
+        form.reset();
+        setSolvers([]);
+        setFileAttachment(null);
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error submitting bug:", error);
+      toast.error(error.message || "Failed to report bug");
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +172,6 @@ const AddBug = () => {
         <Plus className="w-4 h-4" aria-hidden="true" />
       </div>
 
-      {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
           <div
@@ -164,13 +198,13 @@ const AddBug = () => {
                 <textarea
                   id="details"
                   rows={4}
-                  {...form.register("details")}
+                  {...form.register("BugDetails")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Describe the bug..."
                 />
-                {form.formState.errors.details && (
+                {form.formState.errors.BugDetails && (
                   <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.details.message}
+                    {form.formState.errors.BugDetails.message}
                   </p>
                 )}
               </div>
@@ -193,15 +227,8 @@ const AddBug = () => {
                 >
                   <SelectTrigger
                     id="priority"
-                    className="w-full mt-1 border-[#B0C5D0] focus:ring-[#004368] focus:border-[#004368]"
-                    style={{
-                      backgroundColor: "transparent",
-                      outline: "none",
-                      color: "#2B2B2B",
-                      font: "inherit",
-                      border: "1px solid #B0C5D0",
-                      boxShadow: "none",
-                    }}
+                    className="w-full mt-1 border-[#B0C5D0] focus:ring-[#004368] focus:border-[#004368] text-[#2B2B2B]"
+                    style={{ backgroundColor: "white", outline: "none" }}
                   >
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
@@ -211,12 +238,16 @@ const AddBug = () => {
                     <SelectItem value="High">High</SelectItem>
                   </SelectContent>
                 </Select>
+                {form.formState.errors.priority && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.priority.message}
+                  </p>
+                )}
               </div>
 
               {/* Bug Solver */}
               <div>
                 <h4 className="font-medium text-gray-700">Assign task to</h4>
-
                 {!showSolvers ? (
                   <div className="flex items-center gap-2 mt-2">
                     {solvers.length === 0 ? (
@@ -227,7 +258,6 @@ const AddBug = () => {
                       solvers.map((id, idx) => {
                         const solver = solversData.find((s) => s.id === id);
                         if (!solver) return null;
-
                         return (
                           <img
                             key={idx}
@@ -238,7 +268,6 @@ const AddBug = () => {
                         );
                       })
                     )}
-
                     <div
                       onClick={() => setShowSolvers(true)}
                       className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors cursor-pointer"
@@ -277,8 +306,7 @@ const AddBug = () => {
                     <button
                       type="button"
                       onClick={() => setShowSolvers(false)}
-                      className="text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors"
-                      style={{ backgroundColor: "#E6ECF0" }}
+                      className="bg-[#E6ECF0] text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors px-3 py-1 rounded-md"
                     >
                       Done
                     </button>
@@ -294,22 +322,12 @@ const AddBug = () => {
                     label="Discussion files"
                     icon={icons.FilePin}
                     onChange={(e) => setFileAttachment(e.target.files[0])}
-                  />
-                  <FileInput
-                    label="Discussion Pictures"
-                    icon={icons.Img}
-                    accept="image/*"
-                    onChange={(e) => setImageAttachment(e.target.files[0])}
+                    accept="application/pdf,text/plain"
                   />
                 </div>
-                {(fileAttachment || imageAttachment) && (
+                {fileAttachment && (
                   <div className="mt-2 text-sm text-gray-600">
-                    {fileAttachment && (
-                      <p>Attached file: {fileAttachment.name}</p>
-                    )}
-                    {imageAttachment && (
-                      <p>Attached image: {imageAttachment.name}</p>
-                    )}
+                    <p>Attached file: {fileAttachment.name}</p>
                   </div>
                 )}
               </div>
@@ -317,8 +335,9 @@ const AddBug = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#004368] text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
-                style={{ backgroundColor: "#004368" }}
+                className="w-full  text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
+                disabled={isLoading}
+                style={{ backgroundColor: "#004368", outline: "none" }}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">

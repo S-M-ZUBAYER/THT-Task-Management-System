@@ -7,19 +7,20 @@ const SvgRollerLoader = ({
   className = "",
 }) => {
   const radius = (size - strokeWidth) / 2;
-  const dashArray = 2 * Math.PI * radius;
-  const dashLength = dashArray * 0.3;
+  const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className={`relative`} style={{ width: size, height: size }}>
-      {/* Spinning SVG arc */}
+    <div
+      className={`relative ${className}`}
+      style={{ width: size, height: size }}
+    >
+      {/* Background Circle */}
       <svg
-        className={`absolute inset-0 spin-fast ${className}`}
+        className="absolute inset-0"
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
       >
-        {/* Static clock circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -28,7 +29,15 @@ const SvgRollerLoader = ({
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Rotating arc */}
+      </svg>
+
+      {/* Growing Stroke Circle */}
+      <svg
+        className="absolute inset-0"
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+      >
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -36,17 +45,22 @@ const SvgRollerLoader = ({
           stroke={color}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
-          strokeDasharray={`${dashLength} ${dashArray}`}
-          strokeDashoffset="0"
           fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference}
+          style={{
+            transform: "rotate(-90deg)",
+            transformOrigin: "50% 50%",
+            animation: "drawFullCircle 2.5s ease-in-out forwards",
+          }}
         />
       </svg>
 
-      {/* Clock icon in center */}
+      {/* Clock Icon */}
       <svg
         className="absolute inset-0 m-auto text-[#004368]"
-        width={size * 0.2}
-        height={size * 0.2}
+        width={size * 0.25}
+        height={size * 0.25}
         viewBox="0 0 24 24"
         fill="currentColor"
       >

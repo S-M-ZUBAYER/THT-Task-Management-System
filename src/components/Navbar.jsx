@@ -6,10 +6,8 @@ import { Bell, Search } from "lucide-react";
 const Navbar = () => {
   const [show, setShow] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  let imageUrl = "";
-  if (!user) {
-    imageUrl = "https://i.pravatar.cc/300";
-  } else if (user?.image) {
+  let imageUrl = "https://i.pravatar.cc/300";
+  if (user?.image) {
     imageUrl = user.image;
   }
   const handleShow = () => {
@@ -42,7 +40,8 @@ const Navbar = () => {
           <AvatarImage src={imageUrl} />
         </Avatar>
         <p className="font-semibold">
-          Hello! <span className="text-blue-600">Sultan</span>
+          Hello!{" "}
+          <span className="text-blue-600">{user?.name || "sultan"} </span>
         </p>
       </div>
     </div>

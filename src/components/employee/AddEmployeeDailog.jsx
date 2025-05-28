@@ -37,7 +37,7 @@ const employeeSchema = z.object({
   image: z.any().optional(),
 });
 
-export function AddEmployeeDailog() {
+export function AddEmployeeDailog({ fetchData }) {
   const [isOpen, setIsOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,22 +64,28 @@ export function AddEmployeeDailog() {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      const payload = {
-        ...data,
-        role: "user",
-        joiningDate: format(data.joiningDate, "yyyy-MM-dd"),
-      };
-      const res = await axiosApi.post("/user/register", payload, {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("phone", data.phone);
+      formData.append("designation", data.designation);
+      formData.append("joiningDate", format(data.joiningDate, "yyyy-MM-dd"));
+      formData.append("role", "User");
+
+      if (data.image) {
+        formData.append("image", data.image);
+      }
+      const res = await axiosApi.post("/user/register", formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log(res.data);
 
       if (res.status === 201) {
         toast.success("Employee added successfully");
         setIsOpen(false);
-        window.location.reload();
+        fetchData();
       }
     } catch (error) {
       console.error("Error adding employee:", error);
