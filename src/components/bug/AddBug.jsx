@@ -120,6 +120,7 @@ const AddBug = () => {
     try {
       setIsLoading(true);
       const bugInfo = bugs[0];
+      console.log(bugs);
       if (
         !bugInfo ||
         !bugInfo.projectName ||
@@ -128,14 +129,21 @@ const AddBug = () => {
       ) {
         throw new Error("Bug store data is incomplete");
       }
+      if (Array.isArray(solvers)) {
+        console.log("solvers is an array");
+      } else {
+        console.log("solvers is NOT an array");
+      }
 
       const formData = new FormData();
-      formData.append("projectName", "jfdslkfjsdlkfjsdlfj");
+      formData.append("projectName", bugInfo.projectName);
       formData.append("BugDetails", values.BugDetails);
-      formData.append("findDate", "");
+      formData.append("findDate", new Date(values.findDate).toISOString());
       formData.append("priority", values.priority);
       formData.append("status", "Pending");
-      formData.append("assignWith", JSON.stringify(solvers));
+      solvers.forEach((solver) => {
+        formData.append("assignWith", solver);
+      });
       formData.append("bugProjectId", bugInfo.id);
       formData.append("createdEmail", user.email);
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
