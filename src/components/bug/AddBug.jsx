@@ -16,7 +16,7 @@ import icons from "@/constants/icons";
 import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
-import { useBugStore } from "@/Zustand";
+import { useBugData } from "@/hook/useBugData";
 
 const schema = z.object({
   BugDetails: z.string().min(3, "Bug details required"),
@@ -58,7 +58,7 @@ const AddBug = () => {
   const [solversData, setSolversData] = useState([]);
   const [fileAttachment, setFileAttachment] = useState(null);
   const modalRef = useRef(null);
-  const { bugs } = useBugStore();
+  const { id, projectName, fetchBugsById } = useBugData();
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
@@ -119,14 +119,8 @@ const AddBug = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const bugInfo = bugs[0];
-      console.log(bugs);
-      if (
-        !bugInfo ||
-        !bugInfo.projectName ||
-        !bugInfo.id ||
-        !bugInfo.createdEmail
-      ) {
+      console.log(projectName, id, user.email);
+      if (!projectName || !id || !user.email) {
         throw new Error("Bug store data is incomplete");
       }
       if (Array.isArray(solvers)) {
@@ -136,7 +130,7 @@ const AddBug = () => {
       }
 
       const formData = new FormData();
-      formData.append("projectName", bugInfo.projectName);
+      formData.append("projectName", projectName);
       formData.append("BugDetails", values.BugDetails);
       formData.append("findDate", new Date(values.findDate).toISOString());
       formData.append("priority", values.priority);
@@ -144,7 +138,7 @@ const AddBug = () => {
       solvers.forEach((solver) => {
         formData.append("assignWith", solver);
       });
-      formData.append("bugProjectId", bugInfo.id);
+      formData.append("bugProjectId", id);
       formData.append("createdEmail", user.email);
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
       formData.forEach((value, key) => {
@@ -154,6 +148,7 @@ const AddBug = () => {
       const res = await axiosApi.post("/bug/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log(res.data);
 
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
@@ -161,6 +156,7 @@ const AddBug = () => {
         form.reset();
         setSolvers([]);
         setFileAttachment(null);
+        await fetchBugsById();
       }
     } catch (error) {
       console.error("Error submitting bug:", error);

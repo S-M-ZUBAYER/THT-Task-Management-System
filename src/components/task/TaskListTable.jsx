@@ -1,14 +1,14 @@
 import { Calendar } from "lucide-react";
 import AddTask from "./AddTask";
 import { format } from "date-fns";
-import { useTaskStore } from "@/Zustand";
+import { useTaskStore } from "@/Zustand/useTaskStore";
 import { useNavigate } from "react-router-dom";
 
 export const TaskListTable = ({ taskData }) => {
-  const { setTask } = useTaskStore();
+  const { setTasks } = useTaskStore();
   const navigate = useNavigate();
   const handleTaskDetails = (task) => {
-    setTask(task);
+    setTasks(task);
     navigate("/task-details", { replace: true });
   };
   return (

@@ -6,7 +6,7 @@ const BugCard = ({ bugs, bugProjectName, id }) => {
   const navigate = useNavigate();
   const handleBugClick = () => {
     navigate("/bug-details", {
-      state: { id, bugProjectName, bugs },
+      state: { id, bugProjectName },
     });
   };
   return (
