@@ -12,3 +12,8 @@ export const useBugStore = create((set) => ({
   setBugProjectName: (bugProjectName) => set({ bugProjectName }),
   setId: (id) => set({ id }),
 }));
+
+export const useTaskStore = create((set) => ({
+  task: null,
+  setTask: (task) => set({ task }),
+}));

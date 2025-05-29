@@ -5,8 +5,14 @@ import ResourceList from "@/components/task details/ResourceList";
 import TaskStatus from "@/components/task details/TaskStatus";
 import AssignedUsers from "@/components/task details/AssignedUsers";
 import { Clock } from "@/components/svg/svg";
+import { useTaskStore } from "@/Zustand";
+import { useEffect } from "react";
 
 const SingleTaskPage = () => {
+  const { task } = useTaskStore();
+  useEffect(() => {
+    console.log(task);
+  }, [task]);
   const resources = [
     { name: "Figma file of Grozziie app UI Design", date: "01 June 2025" },
     { name: "Resource of Desktop app", date: "05 June 2025" },

@@ -1,25 +1,16 @@
 import { Calendar } from "lucide-react";
 import AddTask from "./AddTask";
+import { format } from "date-fns";
+import { useTaskStore } from "@/Zustand";
+import { useNavigate } from "react-router-dom";
 
-export const TaskListTable = () => {
-  const tasks = [
-    {
-      name: "Task on mobile app development",
-      start: "01 Jan 2025",
-      end: "10 Oct 2025",
-      assigned: 5,
-      status: "Progress",
-    },
-    {
-      name: "Task on Desktopapp development",
-      start: "15 Feb 2025",
-      end: "20 Nov 2025",
-      assigned: 4,
-      status: "Progress",
-    },
-    // ...more rows
-  ];
-
+export const TaskListTable = ({ taskData }) => {
+  const { setTask } = useTaskStore();
+  const navigate = useNavigate();
+  const handleTaskDetails = (task) => {
+    setTask(task);
+    navigate("/task-details", { replace: true });
+  };
   return (
     <div className="bg-white rounded-xl border p-4">
       <div className="flex items-center justify-between mb-4">
@@ -27,7 +18,7 @@ export const TaskListTable = () => {
         <AddTask />
       </div>
       <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-sm  text-center">
           <thead className="text-muted-foreground border-b">
             <tr className="text-[#004368]">
               <th className="p-2">Name</th>
@@ -49,30 +40,44 @@ export const TaskListTable = () => {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((t, i) => (
-              <tr key={i} className="border-b">
-                <td className="p-2">{t.name}</td>
-                <td className="p-2">{t.start}</td>
-                <td className="pl-5">{t.end}</td>
-                <td className="p-2">
-                  <div className="flex">
-                    {[...Array(t.assigned)].map((_, i) => (
-                      <img
-                        key={i}
-                        src={`https://i.pravatar.cc/150?img=${i + 5}`}
-                        className="w-6 h-6 rounded-full border-2 border-white -ml-1"
-                      />
-                    ))}
-                  </div>
-                </td>
-                <td className="p-2">Resources</td>
-                <td className="p-2">
-                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                    {t.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {taskData.map((task, i) => {
+              const { taskInfo } = task;
+              return (
+                <tr
+                  key={i}
+                  className="border-b cursor-pointer"
+                  onClick={() => handleTaskDetails(task)}
+                >
+                  <td className="p-2">{taskInfo.task_title}</td>
+                  <td className="p-2">
+                    {format(
+                      new Date(taskInfo.task_starting_time),
+                      "yyyy-MM-dd"
+                    )}
+                  </td>
+                  <td className="pl-5">
+                    {format(new Date(taskInfo.task_deadline), "yyyy-MM-dd")}
+                  </td>
+                  <td className="flex justify-center items-center">
+                    <div className="flex">
+                      {taskInfo.assigned_employee_ids.map(({ image }, i) => (
+                        <img
+                          key={i}
+                          src={image}
+                          className="w-6 h-6 rounded-full border-2 border-white -ml-1"
+                        />
+                      ))}
+                    </div>
+                  </td>
+                  <td className="p-2">Resources</td>
+                  <td className="p-2">
+                    <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                      {taskInfo.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
