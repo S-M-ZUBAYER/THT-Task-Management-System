@@ -4,7 +4,7 @@ import icons from "@/constants/icons";
 import { gsap } from "gsap";
 
 function UploadedView({
-  file,
+  files,
   handleRemove,
   dragActive,
   handleDragOver,
@@ -47,15 +47,19 @@ function UploadedView({
         <p>or click to select files.</p>
       </label>
 
-      <div className="flex justify-between items-center mt-4 px-4 py-2 border rounded  bg-gray-100">
-        <div className="flex items-center space-x-2">
-          <img src={icons.Docx} alt="doc" className="w-8 " />
-          <div>
-            <p className="text-sm font-medium">{file?.name}</p>
-            <p className="text-xs text-gray-400">
-              {(file?.size || 0) / 1024} KB
-            </p>
-          </div>
+      <div className=" flex justify-center items-center gap-3.5 mt-4 px-4 py-2 border rounded  bg-gray-100">
+        <div>
+          {files.map((file, idx) => (
+            <div className="flex items-center space-x-2" key={idx}>
+              <img src={icons.Docx} alt="doc" className="w-8 " />
+              <div>
+                <p className="text-sm font-medium">{file?.name}</p>
+                <p className="text-xs text-gray-400">
+                  {(file?.size || 0) / 1024} KB
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
         <div onClick={handleRemove} className="text-red-500 hover:text-red-700">
           <Trash2 size={16} />

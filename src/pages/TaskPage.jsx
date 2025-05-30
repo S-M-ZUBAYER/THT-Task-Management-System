@@ -8,20 +8,19 @@ import { axiosApi } from "@/lib/axiosApi";
 export default function TaskPage() {
   const [taskData, setTaskData] = useState([]);
   useEffect(() => {
-    const getTaskData = async () => {
-      const res = await axiosApi.get("/all-task-details/getAll");
-      console.log(res.data.data);
-      setTaskData(res.data.data);
-    };
     getTaskData();
   }, []);
+  const getTaskData = async () => {
+    const res = await axiosApi.get("/all-task-details/getAll");
+    setTaskData(res.data.data);
+  };
   return (
     <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 px-[5vw] ">
       <div className="col-span-2">
         <TaskCardProvider />
 
         <div className="mt-6">
-          <TaskListTable taskData={taskData} />
+          <TaskListTable taskData={taskData} fetchData={getTaskData} />
         </div>
       </div>
       <div className="space-y-6">

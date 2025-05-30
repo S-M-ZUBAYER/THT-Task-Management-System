@@ -3,7 +3,7 @@ import { Plus, X } from "lucide-react";
 import { gsap } from "gsap";
 import DocumentUploader from "./DocumentUploader";
 
-function UploaderModal() {
+function UploaderModal({ title }) {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef(null);
   const toggleModal = useCallback(() => {
@@ -55,7 +55,7 @@ function UploaderModal() {
               <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
             </div>
             <div className="w-[100%] flex justify-center items-center ">
-              <DocumentUploader />
+              <DocumentUploader title={title} />
             </div>
           </div>
         </div>
