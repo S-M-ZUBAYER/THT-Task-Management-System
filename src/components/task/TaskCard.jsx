@@ -1,29 +1,49 @@
-import { CalendarDays, Users } from "lucide-react";
+import React from "react";
+import { format } from "date-fns";
+import { CalendarDays } from "lucide-react";
 
-export const TaskCard = () => {
+export const TaskCard = ({ task }) => {
+  const {
+    task_title,
+    task_details,
+    task_deadline,
+    assigned_employee_ids = [],
+  } = task.taskInfo || {};
+
   return (
-    <div className="border border-[#ded8fc] rounded-xl p-[2vw] w-full max-w-[440px] h-[25vh]  bg-white hover:shadow-md transition-all">
+    <div className="border border-[#ded8fc] rounded-xl p-[2vw] w-full max-w-[440px] h-[25vh] bg-white hover:shadow-md transition-all">
       <span className="text-[10px] text-[#925FE2] font-semibold uppercase mb-2 block">
         ● Project
       </span>
-      <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">Task name</h3>
+
+      <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">
+        {task_title || "Untitled Task"}
+      </h3>
+
       <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-        Create a high-fidelity UI for the landing page following brand
-        guidelines. Include a hero section, features block, testimonials, and
-        CTA buttons.
+        {task_details || "No task details provided."}
       </p>
-      <div className="text-xs text-red-500 flex items-center gap-1 mb-2">
-        <CalendarDays size={14} className="text-red-500" />
-        <span>Deadline: May 12, 2025</span>
-      </div>
+
+      {task_deadline && (
+        <div className="text-xs text-red-500 flex items-center gap-1 mb-2">
+          <CalendarDays size={14} className="text-red-500" />
+          <span>
+            Deadline: {format(new Date(task_deadline), "MMMM d, yyyy")}
+          </span>
+        </div>
+      )}
+
       <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((_, i) => (
-          <img
-            key={i}
-            src={`https://i.pravatar.cc/150?img=${i + 5}`}
-            className="w-6 h-6 rounded-full border-2 border-white -ml-1"
-          />
-        ))}
+        {assigned_employee_ids.map(({ image }, i) =>
+          image ? (
+            <img
+              key={i}
+              src={image}
+              alt={`Employee ${i + 1}`}
+              className="w-6 h-6 rounded-full border-2 border-white -ml-1"
+            />
+          ) : null
+        )}
       </div>
     </div>
   );

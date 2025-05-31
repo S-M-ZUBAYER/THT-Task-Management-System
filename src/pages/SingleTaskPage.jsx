@@ -18,7 +18,6 @@ const SingleTaskPage = () => {
 
   useEffect(() => {
     if (!task && id) fetchTaskById();
-    console.log(id);
   }, [id]);
 
   if (!task) {

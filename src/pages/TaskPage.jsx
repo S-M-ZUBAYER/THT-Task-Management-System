@@ -15,9 +15,9 @@ export default function TaskPage() {
     setTaskData(res.data.data);
   };
   return (
-    <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 px-[5vw] ">
+    <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6 px-[5vw] w-[80vw] ">
       <div className="col-span-2">
-        <TaskCardProvider />
+        <TaskCardProvider task={taskData} />
 
         <div className="mt-6">
           <TaskListTable taskData={taskData} fetchData={getTaskData} />
@@ -25,7 +25,7 @@ export default function TaskPage() {
       </div>
       <div className="space-y-6">
         <CalendarPanel />
-        <ResourcesPanel />
+        <ResourcesPanel task={taskData} />
       </div>
     </div>
   );
