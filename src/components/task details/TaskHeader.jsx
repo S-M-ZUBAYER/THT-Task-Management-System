@@ -1,6 +1,6 @@
 import icons from "@/constants/icons";
 
-const TaskHeader = () => {
+const TaskHeader = ({ TaskHeader }) => {
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-4">
@@ -18,9 +18,7 @@ const TaskHeader = () => {
           Project
         </p>
       </div>
-      <h2 className="text-2xl font-bold mt-1">
-        Android Mobile App Development
-      </h2>
+      <h2 className="text-2xl font-bold mt-1">{TaskHeader}</h2>
     </div>
   );
 };
