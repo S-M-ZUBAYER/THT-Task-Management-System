@@ -10,6 +10,7 @@ import AddDiscuss from "./AddDiscuss";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import useTaskData from "@/hook/useTaskData";
+import UpdateDiscuss from "./UpdateDiscuss";
 
 const DiscussionList = ({ discussions }) => {
   const { fetchTaskById } = useTaskData();
@@ -81,11 +82,18 @@ const DiscussionList = ({ discussions }) => {
                 outline: "none",
                 border: "none",
               }}
+              className="w-[2vw] "
             >
               {discussion.title}
             </AccordionTrigger>
 
             <AccordionContent className="text-sm pl-8 text-[#004368] space-y-4">
+              {/*  Update Discuss */}
+              <div className="w-full flex justify-end">
+                <div>
+                  <UpdateDiscuss discussion={discussion} />
+                </div>
+              </div>
               {/* Date */}
               <div className="flex items-center gap-2">
                 <img src={icons.Event} alt="Event icon" className="w-5 h-5" />
