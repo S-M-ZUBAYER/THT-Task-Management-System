@@ -23,7 +23,6 @@ const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
   task_details: z.string().min(3, "Bug details required"),
   task_starting_time: z.date({ required_error: "Date is required" }),
-  task_deadline: z.date({ required_error: "Deadline is required" }),
   status: z.enum(["To Do", "In Progress", "Completed"]),
   assigned_employee_ids: z.array(z.string()).optional(),
 });
@@ -94,7 +93,7 @@ const AddTask = ({ fetchData }) => {
       const submissionData = {
         ...values,
         task_starting_time: values.task_starting_time.toISOString(),
-        task_deadline: values.task_deadline.toISOString(),
+        task_deadline: values?.task_deadline?.toISOString(),
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };

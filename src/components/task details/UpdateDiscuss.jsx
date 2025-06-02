@@ -73,6 +73,17 @@ const UpdateDiscuss = ({ discussion }) => {
       solvers: [],
     },
   });
+  useEffect(() => {
+    if (isOpen && discussion) {
+      form.reset({
+        title: discussion.title,
+        details: discussion.details,
+        discussion_date: new Date(discussion.discussion_date),
+        solvers: [], // reset or populate if needed
+      });
+      setSolvers(discussion.discussion_with_users?.map((u) => u.id) || []);
+    }
+  }, [isOpen, discussion]);
 
   const toggleModal = useCallback(() => {
     if (!isOpen) {
@@ -106,11 +117,7 @@ const UpdateDiscuss = ({ discussion }) => {
         "discussion_date",
         new Date(values.discussion_date).toISOString()
       );
-
-      solvers.forEach((solverId) => {
-        formData.append("discussion_with_ids", solverId);
-      });
-
+      formData.append("discussion_with_ids", JSON.stringify(solvers));
       const res = await axiosApi.post(
         `/taskDiscussion/update/${discussion.id}`,
         formData
