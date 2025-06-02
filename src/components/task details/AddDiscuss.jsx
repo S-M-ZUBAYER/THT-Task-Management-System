@@ -105,9 +105,7 @@ const AddDiscuss = () => {
         "discussion_date",
         new Date(values.discussion_date).toISOString()
       );
-      solvers.forEach((solver) => {
-        formData.append("discussion_with_ids", solver);
-      });
+      formData.append("discussion_with_ids", JSON.stringify(solvers));
       formData.append("task_id", id);
 
       formData.forEach((value, key) => {
