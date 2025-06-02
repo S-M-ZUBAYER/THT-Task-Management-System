@@ -1,5 +1,4 @@
 import React from "react";
-import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const BugCard = ({ bugs, bugProjectName, id }) => {
@@ -19,9 +18,6 @@ const BugCard = ({ bugs, bugProjectName, id }) => {
           <div className="flex items-center justify-center gap-2">
             <div className="w-3 h-3 bg-[#E8D9FF] rounded-full"></div>
             <p className="text-sm text-[#6600FF] font-medium">BUGS</p>
-          </div>
-          <div className="bg-[#E6ECF0] rounded-full ">
-            <Plus className="text-[#004368] " />
           </div>
         </div>
         <h2 className="text-lg font-semibold mb-1 mt-6">{bugProjectName} </h2>
