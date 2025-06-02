@@ -1,6 +1,7 @@
 import React from "react";
 import { Clock } from "@/components/svg/svg";
 import TaskMenu from "./TaskMenu";
+import { useNavigate } from "react-router-dom";
 
 const statusColors = [
   {
@@ -30,9 +31,15 @@ const TaskCard = ({
   id,
 }) => {
   const { text, svgColor } = statusColors[statusIndex];
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl border-2 p-4 space-y-3 border-[#E8D9FF]">
+    <div
+      className="bg-white rounded-xl border-2 p-4 space-y-3 border-[#E8D9FF]"
+      onClick={() => {
+        navigate("/task-details", { state: { id } });
+      }}
+    >
       <div className="text-xs text-purple-600 font-bold flex justify-between">
         <p>Project</p>
         <TaskMenu id={id} />

@@ -1,4 +1,5 @@
 import icons from "@/constants/icons";
+import UpdateTask from "./UpdateTask";
 
 const TaskHeader = ({ TaskHeader }) => {
   return (
@@ -18,7 +19,10 @@ const TaskHeader = ({ TaskHeader }) => {
           Project
         </p>
       </div>
-      <h2 className="text-2xl font-bold mt-1">{TaskHeader}</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold mt-1">{TaskHeader}</h2>
+        <UpdateTask />
+      </div>
     </div>
   );
 };

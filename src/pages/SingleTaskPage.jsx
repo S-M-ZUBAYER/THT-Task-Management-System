@@ -49,7 +49,10 @@ const SingleTaskPage = () => {
               <div className="flex items-center gap-2">
                 <Clock Stock="#FF0000" />
                 <p className="text-[#FF0000]">
-                  Deadline: {format(taskInfo.task_deadline, "MMMM d, yyyy")}
+                  Deadline:{" "}
+                  {taskInfo.task_deadline !== null
+                    ? format(taskInfo.task_deadline, "MMMM d, yyyy")
+                    : "Not started yet"}
                 </p>
               </div>
             </div>

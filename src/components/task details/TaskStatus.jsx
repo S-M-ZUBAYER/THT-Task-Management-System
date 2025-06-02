@@ -9,13 +9,16 @@ import {
 import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import useTaskData from "@/hook/useTaskData";
+import useTaskColumns from "@/hook/useTasksData";
 
 const TaskStatus = ({ current }) => {
   const { id } = useTaskData();
+  const { fetchTasks } = useTaskColumns();
   const updateStatus = async (value) => {
     try {
       await axiosApi.post(`/taskStatus/${id}`, { status: value });
       toast.success("Task status updated successfully");
+      fetchTasks();
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to update bug status"
