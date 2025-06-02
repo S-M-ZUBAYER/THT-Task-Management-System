@@ -1,4 +1,5 @@
-import React from "react";
+// TaskCardProvider.jsx
+import React, { useState, useMemo } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -10,45 +11,86 @@ import {
 } from "@/components/ui/pagination";
 import { TaskCard } from "./TaskCard";
 
-function TaskCardProvider() {
+const ITEMS_PER_PAGE = 2;
+
+function TaskCardProvider({ task }) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const progressTasks = useMemo(
+    () => task.filter((t) => t.taskInfo.status === "In Progress"),
+    [task]
+  );
+
+  const totalPages = Math.ceil(progressTasks.length / ITEMS_PER_PAGE);
+
+  const paginatedTasks = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return progressTasks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, progressTasks]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
   return (
-    <div className=" gap-4 border border-[#E6ECF0] rounded-xl pt-4 pb-2 px-2">
+    <div className="gap-4 border border-[#E6ECF0] rounded-xl pt-4 pb-2 px-2">
       <div className="flex justify-between items-center">
         <h2 className="text-sm font-bold text-[#004368] mb-3">In Progress</h2>
         <div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" style={{ color: "#004368" }} />
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage - 1);
+                  }}
+                  style={{ color: "#004368" }}
+                />
               </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(index + 1);
+                    }}
+                    isActive={currentPage === index + 1}
+                    style={{ color: "#004368" }}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {totalPages > 3 && currentPage < totalPages - 1 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
               <PaginationItem>
-                <PaginationLink href="#" style={{ color: "#004368" }}>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive style={{ color: "#004368" }}>
-                  2
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" style={{ color: "#004368" }}>
-                  3
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" style={{ color: "#004368" }} />
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage + 1);
+                  }}
+                  style={{ color: "#004368" }}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
         </div>
       </div>
+
       <div className="flex gap-2">
-        <TaskCard />
-        <TaskCard />
+        {paginatedTasks.map((task, idx) => (
+          <TaskCard task={task} key={idx} />
+        ))}
       </div>
     </div>
   );

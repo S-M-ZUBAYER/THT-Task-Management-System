@@ -17,6 +17,7 @@ import { Input } from "../ui/input";
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
+import useTaskColumns from "@/hook/useTasksData";
 
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
@@ -27,13 +28,14 @@ const schema = z.object({
   assigned_employee_ids: z.array(z.string()).optional(),
 });
 
-const AddTask = () => {
+const AddTask = ({ fetchData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [solvers, setSolvers] = useState([]);
   const [solversData, setSolversData] = useState([]);
   const modalRef = useRef(null);
+  const { fetchTasks } = useTaskColumns();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -101,6 +103,8 @@ const AddTask = () => {
       form.reset();
       setSolvers([]);
       toast.success("Task created successfully!");
+      fetchData();
+      fetchTasks();
     } catch (error) {
       console.log(error);
       toast.error("Failed to create task. Please try again.");

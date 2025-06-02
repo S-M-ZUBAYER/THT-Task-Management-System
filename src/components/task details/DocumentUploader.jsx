@@ -1,24 +1,28 @@
 import React, { useState, useCallback } from "react";
 import UploadingView from "./UploadingView";
 import UploadedView from "./UploadedView";
+import { axiosApi } from "@/lib/axiosApi";
+import useTaskData from "@/hook/useTaskData";
+import toast from "react-hot-toast";
 
-export default function DocumentUploader() {
+export default function DocumentUploader({ title }) {
   const [uploadState, setUploadState] = useState("idle");
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
+  const { id, fetchTaskById } = useTaskData();
 
-  const handleFile = (selectedFile) => {
-    setFile(selectedFile);
+  const handleFile = (selectedFiles) => {
+    setFiles((prev) => [...prev, ...selectedFiles]);
     setUploadState("uploading");
 
     setTimeout(() => {
       setUploadState("uploaded");
-    }, 2000);
+    }, 1000);
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) handleFile(selectedFile);
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > 0) handleFile(selectedFiles);
   };
 
   const handleDrop = useCallback((e) => {
@@ -26,8 +30,8 @@ export default function DocumentUploader() {
     e.stopPropagation();
     setDragActive(false);
 
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile) handleFile(droppedFile);
+    const droppedFiles = Array.from(e.dataTransfer.files || []);
+    if (droppedFiles.length > 0) handleFile(droppedFiles);
   }, []);
 
   const handleDragOver = (e) => {
@@ -41,8 +45,37 @@ export default function DocumentUploader() {
   };
 
   const handleRemove = () => {
-    setFile(null);
+    setFiles([]);
     setUploadState("idle");
+  };
+
+  const handleSubmit = async () => {
+    if (uploadState !== "uploaded" || files.length === 0) return;
+
+    const isResource = title === "Resources";
+    const endpoint = isResource ? "/resource/create" : "/test-reports/upload";
+    const fileFieldName = isResource ? "resource_file" : "report_file";
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append(fileFieldName, file);
+    });
+
+    formData.append("task_id", id);
+
+    try {
+      await axiosApi.post(endpoint, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setFiles([]);
+      setUploadState("idle");
+      await fetchTaskById();
+      toast.success("Files uploaded successfully.");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload files. Please try again.");
+    }
   };
 
   const renderContent = () => {
@@ -59,7 +92,12 @@ export default function DocumentUploader() {
                 : "text-gray-500 hover:border-blue-400"
             }`}
           >
-            <input type="file" className="hidden" onChange={handleFileChange} />
+            <input
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+              multiple
+            />
             <div className="flex flex-col items-center">
               <div className="text-3xl mb-2">📤</div>
               <p>Drag and drop your documents here,</p>
@@ -72,7 +110,7 @@ export default function DocumentUploader() {
       case "uploaded":
         return (
           <UploadedView
-            file={file}
+            files={files}
             handleRemove={handleRemove}
             dragActive={dragActive}
             handleDragOver={handleDragOver}
@@ -103,6 +141,7 @@ export default function DocumentUploader() {
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
           disabled={uploadState !== "uploaded"}
+          onClick={handleSubmit}
         >
           Submit
         </div>

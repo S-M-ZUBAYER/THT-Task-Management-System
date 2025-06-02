@@ -1,11 +1,10 @@
 import BugTableRow from "./BugTableRow";
 import icons from "@/constants/icons";
-import { useBugStore } from "@/Zustand";
+
+import { useBugStore } from "@/Zustand/useBugsStore";
 
 export default function BugTable() {
   const { bugs } = useBugStore();
-  console.log(bugs);
-
   return (
     <div className="overflow-x-auto rounded-lg  ">
       <table className="w-full text-sm text-left text-gray-600">
@@ -31,7 +30,7 @@ export default function BugTable() {
           </tr>
         </thead>
         <tbody>
-          {bugs.length === 0 ? (
+          {bugs === null ? (
             <tr>
               <td colSpan="7" className="text-center py-4">
                 No bugs found.

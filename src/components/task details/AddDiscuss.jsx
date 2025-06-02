@@ -5,35 +5,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { gsap } from "gsap";
 import { X, Plus } from "lucide-react";
 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import icons from "@/constants/icons";
 import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
-import { useBugData } from "@/hook/useBugData";
+import useTaskData from "@/hook/useTaskData";
 
 const schema = z.object({
-  BugDetails: z.string().min(3, "Bug details required"),
-  findDate: z.date({ required_error: "Date is required" }),
-  priority: z.enum(["Low", "Medium", "High"]),
-  assignWith: z.array(z.string()).optional(),
-  fileAttachment: z
-    .any()
-    .optional()
-    .refine(
-      (file) => !file || file.size <= 5 * 1024 * 1024,
-      "File size must be less than 5MB"
-    )
-    .refine(
-      (file) => !file || ["application/pdf", "text/plain"].includes(file.type),
-      "Only PDF or text files are allowed"
-    ),
+  title: z.string().min(3, "Title required"),
+  details: z.string().min(3, "Details required"),
+  discussion_date: z.date({ required_error: "Date is required" }),
+  discussion_with_ids: z.array(z.string()).optional(),
 });
 
 const FileInput = ({ label, icon, onChange, accept }) => (
@@ -50,16 +31,14 @@ const FileInput = ({ label, icon, onChange, accept }) => (
   </label>
 );
 
-const AddBug = () => {
+const AddDiscuss = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [solvers, setSolvers] = useState([]);
   const [solversData, setSolversData] = useState([]);
-  const [fileAttachment, setFileAttachment] = useState(null);
   const modalRef = useRef(null);
-  const { id, projectName, fetchBugsById } = useBugData();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { id, fetchTaskById } = useTaskData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -86,11 +65,10 @@ const AddBug = () => {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      BugDetails: "",
-      findDate: new Date(),
-      priority: "Medium",
+      title: "",
+      details: "",
+      discussion_date: new Date(),
       solvers: [],
-      fileAttachment: null,
     },
   });
 
@@ -119,44 +97,31 @@ const AddBug = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      console.log(projectName, id, user.email);
-      if (!projectName || !id || !user.email) {
-        throw new Error("Bug store data is incomplete");
-      }
-      if (Array.isArray(solvers)) {
-        console.log("solvers is an array");
-      } else {
-        console.log("solvers is NOT an array");
-      }
-
+      console.log(values, "id", id, solvers);
       const formData = new FormData();
-      formData.append("projectName", projectName);
-      formData.append("BugDetails", values.BugDetails);
-      formData.append("findDate", new Date(values.findDate).toISOString());
-      formData.append("priority", values.priority);
-      formData.append("status", "Pending");
+      formData.append("title", values.title);
+      formData.append("details", values.details);
+      formData.append(
+        "discussion_date",
+        new Date(values.discussion_date).toISOString()
+      );
       solvers.forEach((solver) => {
-        formData.append("assignWith", solver);
+        formData.append("discussion_with_ids", solver);
       });
-      formData.append("bugProjectId", id);
-      formData.append("createdEmail", user.email);
-      if (fileAttachment) formData.append("attachmentFile", fileAttachment);
+      formData.append("task_id", id);
+
       formData.forEach((value, key) => {
         console.log(`${key}:`, value);
       });
 
-      const res = await axiosApi.post("/bug/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log(res.data);
+      const res = await axiosApi.post("/taskDiscussion/create", formData);
 
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
         toggleModal();
         form.reset();
         setSolvers([]);
-        setFileAttachment(null);
-        await fetchBugsById();
+        fetchTaskById();
       }
     } catch (error) {
       console.error("Error submitting bug:", error);
@@ -190,68 +155,63 @@ const AddBug = () => {
               <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
             </div>
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Bug Details */}
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 text-[0.8vw] "
+            >
+              {/* Discussion Title */}
               <div>
                 <label
                   htmlFor="details"
                   className="block font-medium text-gray-700"
                 >
-                  Bug Details
+                  Discussion Title
+                </label>
+                <input
+                  id="title"
+                  {...form.register("title")}
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw] "
+                  placeholder="Describe the discuss title"
+                />
+                {form.formState.errors.title && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.title.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Discuss Details */}
+              <div>
+                <label
+                  htmlFor="details"
+                  className="block font-medium text-gray-700"
+                >
+                  Discussion Details
                 </label>
                 <textarea
                   id="details"
                   rows={4}
-                  {...form.register("BugDetails")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Describe the bug..."
+                  {...form.register("details")}
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw]"
+                  placeholder="Describe the discuss Details"
                 />
-                {form.formState.errors.BugDetails && (
+                {form.formState.errors.details && (
                   <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.BugDetails.message}
+                    {form.formState.errors.details.message}
                   </p>
                 )}
               </div>
 
               {/* Find Date */}
-              <DatePicker form={form} name="findDate" label="Find Date" />
-
-              {/* Priority */}
-              <div>
-                <label
-                  htmlFor="priority"
-                  className="block font-medium text-gray-700"
-                >
-                  Priority
-                </label>
-                <Select
-                  onValueChange={(val) =>
-                    form.setValue("priority", val, { shouldValidate: true })
-                  }
-                >
-                  <SelectTrigger
-                    id="priority"
-                    className="w-full mt-1 border-[#B0C5D0] focus:ring-[#004368] focus:border-[#004368] text-[#2B2B2B]"
-                    style={{ backgroundColor: "white", outline: "none" }}
-                  >
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Low">Low</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="High">High</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.priority && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.priority.message}
-                  </p>
-                )}
-              </div>
+              <DatePicker
+                form={form}
+                name="discussion_date"
+                label="Discussion Date"
+              />
 
               {/* Bug Solver */}
               <div>
-                <h4 className="font-medium text-gray-700">Assign task to</h4>
+                <h4 className="font-medium text-gray-700">Discussion With</h4>
                 {!showSolvers ? (
                   <div className="flex items-center gap-2 mt-2">
                     {solvers.length === 0 ? (
@@ -318,24 +278,6 @@ const AddBug = () => {
                 )}
               </div>
 
-              {/* Attachments */}
-              <div>
-                <h4 className="font-medium text-gray-700">Bug Attachments</h4>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <FileInput
-                    label="Discussion files"
-                    icon={icons.FilePin}
-                    onChange={(e) => setFileAttachment(e.target.files[0])}
-                    accept="application/pdf,text/plain"
-                  />
-                </div>
-                {fileAttachment && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    <p>Attached file: {fileAttachment.name}</p>
-                  </div>
-                )}
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
@@ -368,7 +310,7 @@ const AddBug = () => {
                     Submitting...
                   </div>
                 ) : (
-                  "Submit Bug Details"
+                  "Submit Discussion"
                 )}
               </button>
             </form>
@@ -379,4 +321,4 @@ const AddBug = () => {
   );
 };
 
-export default AddBug;
+export default AddDiscuss;
