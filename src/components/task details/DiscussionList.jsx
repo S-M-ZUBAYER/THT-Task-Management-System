@@ -11,8 +11,10 @@ import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import useTaskData from "@/hook/useTaskData";
 import UpdateDiscuss from "./UpdateDiscuss";
+import { useUserData } from "@/hook/useUserData";
 
 const DiscussionList = ({ discussions }) => {
+  const { admin } = useUserData();
   const { fetchTaskById } = useTaskData();
   const handleFileChange = async (id, e) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -60,7 +62,7 @@ const DiscussionList = ({ discussions }) => {
       <>
         <div className="flex justify-between items-center text-2xl text-[#004368] font-[600] ">
           <p>Discuss</p>
-          <AddDiscuss />
+          {admin && <AddDiscuss />}
         </div>
         <p className="text-center text-gray-500">No discussions available.</p>
       </>
@@ -71,7 +73,7 @@ const DiscussionList = ({ discussions }) => {
     <>
       <div className="flex justify-between items-center text-2xl text-[#004368] font-[600] ">
         <p>Discuss</p>
-        <AddDiscuss />
+        {admin && <AddDiscuss />}
       </div>
       <Accordion type="single" collapsible className="w-full">
         {discussions.map((discussion, index) => (

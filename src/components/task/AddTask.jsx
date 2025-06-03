@@ -27,7 +27,7 @@ const schema = z.object({
   assigned_employee_ids: z.array(z.string()).optional(),
 });
 
-const AddTask = ({ fetchData }) => {
+const AddTask = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -102,7 +102,6 @@ const AddTask = ({ fetchData }) => {
       form.reset();
       setSolvers([]);
       toast.success("Task created successfully!");
-      fetchData();
       fetchTasks();
     } catch (error) {
       console.log(error);

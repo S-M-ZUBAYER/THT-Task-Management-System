@@ -34,19 +34,21 @@ const AppLayout = () => {
 };
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useUserData();
-  if (!user) {
-    return <Navigate to="/sign-in" replace />;
-  }
-  return <>{children}</>;
+  const { user, loading } = useUserData();
+
+  if (loading) return null; // or <LoadingSpinner />
+  if (!user) return <Navigate to="/sign-in" replace />;
+
+  return children;
 };
 
 const PublicRoute = ({ children }) => {
-  const { user } = useUserData();
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
-  return <>{children}</>;
+  const { user, loading } = useUserData();
+
+  if (loading) return null; // or <LoadingSpinner />
+  if (user) return <Navigate to="/" replace />;
+
+  return children;
 };
 
 const App = () => {

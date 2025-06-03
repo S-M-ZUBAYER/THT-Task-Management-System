@@ -1,7 +1,9 @@
 import icons from "@/constants/icons";
 import UpdateTask from "./UpdateTask";
+import { useUserData } from "@/hook/useUserData";
 
 const TaskHeader = ({ TaskHeader }) => {
+  const { admin } = useUserData();
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-4">
@@ -21,7 +23,7 @@ const TaskHeader = ({ TaskHeader }) => {
       </div>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold mt-1">{TaskHeader}</h2>
-        <UpdateTask />
+        {admin && <UpdateTask />}
       </div>
     </div>
   );
