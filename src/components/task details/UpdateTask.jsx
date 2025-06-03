@@ -111,16 +111,15 @@ const UpdateTask = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      console.log(values);
       const startingTime =
-        values.task_starting_time === undefined
-          ? new Date(taskInfo.task_starting_time)
-          : values.task_starting_time.toISOString();
+        values.task_starting_time instanceof Date
+          ? values.task_starting_time.toISOString()
+          : values.task_starting_time;
 
       const deadline =
-        values.task_deadline === undefined
-          ? taskInfo.task_deadline
-          : values.task_deadline.toISOString();
+        values.task_deadline instanceof Date
+          ? values.task_deadline.toISOString()
+          : values.task_deadline;
 
       const submissionData = {
         ...values,
@@ -129,12 +128,7 @@ const UpdateTask = () => {
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
-      console.log(submissionData);
-      const res = await axiosApi.post(
-        `/tasks/update/${taskInfo.id}`,
-        submissionData
-      );
-      console.log(res.data);
+      await axiosApi.post(`/tasks/update/${taskInfo.id}`, submissionData);
 
       toggleModal();
       form.reset();

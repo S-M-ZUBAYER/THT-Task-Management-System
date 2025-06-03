@@ -2,10 +2,14 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
   Outlet,
 } from "react-router-dom";
+import { useUserData } from "./hook/useUserData";
+
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
+
 import Home from "./pages/Home";
 import EmployeePage from "./pages/EmployeePage";
 import TaskPage from "./pages/TaskPage";
@@ -17,7 +21,7 @@ import SignInPage from "./pages/SignInPage";
 
 const AppLayout = () => {
   return (
-    <div className="flex h-screen ">
+    <div className="flex h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Navbar />
@@ -29,11 +33,34 @@ const AppLayout = () => {
   );
 };
 
+const ProtectedRoute = ({ children }) => {
+  const { user } = useUserData();
+  if (!user) {
+    return <Navigate to="/sign-in" replace />;
+  }
+  return <>{children}</>;
+};
+
+const PublicRoute = ({ children }) => {
+  const { user } = useUserData();
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
+
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Home />} />
           <Route path="employees" element={<EmployeePage />} />
           <Route path="tasks" element={<TaskPage />} />
@@ -43,7 +70,15 @@ const App = () => {
           <Route path="bug-details" element={<BugDetailsPage />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Route>
-        <Route path="sign-in" element={<SignInPage />} />
+
+        <Route
+          path="/sign-in"
+          element={
+            <PublicRoute>
+              <SignInPage />
+            </PublicRoute>
+          }
+        />
       </Routes>
     </Router>
   );

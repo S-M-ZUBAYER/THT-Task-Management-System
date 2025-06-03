@@ -122,7 +122,6 @@ const UpdateDiscuss = ({ discussion }) => {
         `/taskDiscussion/update/${discussion.id}`,
         formData
       );
-      console.log(res);
       if (res.status === 200) {
         toast.success("Discussion updated successfully!");
         toggleModal();
