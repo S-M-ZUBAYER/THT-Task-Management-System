@@ -44,7 +44,7 @@ const TaskCard = ({
     >
       <div className="text-xs text-purple-600 font-bold flex justify-between">
         <p>Project</p>
-        {admin && <TaskMenu id={id} />}
+        {admin && <TaskMenu id={id} projectName={title} />}
       </div>
       <h3 className="font-semibold">{title}</h3>
       <p className="text-sm text-gray-500">{description}</p>

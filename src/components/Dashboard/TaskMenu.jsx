@@ -9,20 +9,21 @@ import useTaskColumns from "@/hook/useTasksData";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 
-function TaskMenu({ id }) {
+function TaskMenu({ id, projectName }) {
   const { fetchTasks, removeTaskById } = useTaskColumns();
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
       await axiosApi.post("/delete-task", {
         task_id: id,
+        projectName,
       });
       toast.success("Task deleted successfully");
       removeTaskById(id);
       fetchTasks();
     } catch (error) {
       console.error("Error deleting employee:", error);
-      toast.error("Failed to delete employee");
+      toast.error("Failed to delete Task");
     }
   };
 
