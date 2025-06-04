@@ -51,8 +51,8 @@ export default function Signin() {
         throw new Error(data.error || "Login failed");
       }
     } catch (error) {
-      // Use toast to display the error message
-      toast.error(error.message || "Login failed");
+      toast.error("Login failed");
+      console.log(error);
     } finally {
       setLoading(false);
     }

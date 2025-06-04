@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { gsap } from "gsap";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Edit } from "lucide-react";
 
 import {
   Select,
@@ -13,28 +13,35 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
-
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import useTaskColumns from "@/hook/useTasksData";
+import { useTaskStore } from "@/Zustand/useTaskStore";
+import useTaskData from "../../hook/useTaskData";
 
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
   task_details: z.string().min(3, "Bug details required"),
-  task_starting_time: z.date({ required_error: "Date is required" }),
   status: z.enum(["To Do", "In Progress", "Completed"]),
   assigned_employee_ids: z.array(z.string()).optional(),
+  task_starting_time: z.union([z.date(), z.string().datetime()]).optional(),
+  task_deadline: z.union([z.date(), z.string().datetime()]).optional(),
 });
 
-const AddTask = () => {
+const UpdateTask = () => {
+  const { fetchTasks } = useTaskColumns();
+  const { task } = useTaskStore();
+  const { taskInfo } = task;
+  const { fetchTaskById } = useTaskData();
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [solvers, setSolvers] = useState([]);
+  const [solvers, setSolvers] = useState(
+    taskInfo?.assigned_employee_ids?.map((u) => u.id) || []
+  );
   const [solversData, setSolversData] = useState([]);
   const modalRef = useRef(null);
-  const { fetchTasks } = useTaskColumns();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -53,15 +60,29 @@ const AddTask = () => {
     fetchSolvers();
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        task_title: taskInfo.task_title,
+        task_details: taskInfo.task_details,
+        task_starting_time: taskInfo.task_starting_time,
+        task_deadline: taskInfo.task_deadline,
+        status: taskInfo.status,
+      });
+    }
+  }, [isOpen]);
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      task_title: "",
-      task_details: "",
-      task_starting_time: new Date(),
-      task_deadline: undefined,
-      status: "To Do",
-      assigned_employee_ids: [],
+      task_title: taskInfo?.task_title || "",
+      task_details: taskInfo?.task_details || "",
+      task_starting_time: taskInfo?.task_starting_time
+        ? new Date(taskInfo.task_starting_time)
+        : undefined,
+      task_deadline: taskInfo?.task_deadline
+        ? new Date(taskInfo.task_deadline)
+        : undefined,
+      status: taskInfo?.status || "To Do",
     },
   });
 
@@ -90,22 +111,34 @@ const AddTask = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
+      const startingTime =
+        values.task_starting_time instanceof Date
+          ? values.task_starting_time.toISOString()
+          : values.task_starting_time;
+
+      const deadline =
+        values.task_deadline instanceof Date
+          ? values.task_deadline.toISOString()
+          : values.task_deadline;
+
       const submissionData = {
         ...values,
-        task_starting_time: values.task_starting_time.toISOString(),
-        task_deadline: values?.task_deadline?.toISOString(),
+        task_starting_time: startingTime,
+        task_deadline: deadline,
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
-      await axiosApi.post("/tasks/Create", submissionData);
+      await axiosApi.post(`/tasks/update/${taskInfo.id}`, submissionData);
+
       toggleModal();
       form.reset();
       setSolvers([]);
-      toast.success("Task created successfully!");
+      toast.success("Task updated successfully!");
       fetchTasks();
+      fetchTaskById();
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to create task. Please try again.");
+      console.error(error);
+      toast.error("Failed to update task. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -118,12 +151,11 @@ const AddTask = () => {
         className="flex items-center justify-center text-[#004368] bg-[#E6ECF0] hover:bg-[#D6E6F0] focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
         aria-label="Add new bug"
       >
-        <Plus className="w-4 h-4" aria-hidden="true" />
+        <Edit className="w-4 h-4" aria-hidden="true" />
       </div>
 
-      {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50 ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
           <div
             ref={modalRef}
             className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xl relative space-y-6"
@@ -137,7 +169,6 @@ const AddTask = () => {
             </div>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Task Title */}
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Project name
@@ -157,7 +188,6 @@ const AddTask = () => {
                 )}
               </div>
 
-              {/* task Details */}
               <div>
                 <label
                   htmlFor="details"
@@ -178,7 +208,6 @@ const AddTask = () => {
                   </p>
                 )}
               </div>
-              {/* Date */}
 
               <div className="flex gap-4 w-full">
                 <div className="w-1/2">
@@ -197,7 +226,6 @@ const AddTask = () => {
                 </div>
               </div>
 
-              {/* Priority */}
               <div>
                 <label
                   htmlFor="status"
@@ -212,8 +240,7 @@ const AddTask = () => {
                   }
                 >
                   <SelectTrigger
-                    id="priority"
-                    className="w-full mt-1 border-[#B0C5D0] focus:ring-[#004368] focus:border-[#004368]"
+                    className="w-full mt-1 border-[#B0C5D0]"
                     style={{
                       backgroundColor: "transparent",
                       outline: "none",
@@ -233,10 +260,8 @@ const AddTask = () => {
                 </Select>
               </div>
 
-              {/* Bug Solver */}
               <div>
                 <h4 className="font-medium text-gray-700">Assign task to</h4>
-
                 {!showSolvers ? (
                   <div className="flex items-center gap-2 mt-2">
                     {solvers.length === 0 ? (
@@ -247,27 +272,21 @@ const AddTask = () => {
                       solvers.map((id, idx) => {
                         const solver = solversData.find((s) => s.id === id);
                         if (!solver) return null;
-
                         return (
                           <img
                             key={idx}
                             src={solver.src}
-                            alt={`Selected solver ${idx + 1}`}
+                            alt={`Solver ${idx + 1}`}
                             className="w-8 h-8 rounded-full border border-gray-300"
                           />
                         );
                       })
                     )}
-
                     <div
                       onClick={() => setShowSolvers(true)}
                       className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors cursor-pointer"
-                      aria-label="Add solvers"
                     >
-                      <Plus
-                        className="w-4 h-4 text-gray-600"
-                        aria-hidden="true"
-                      />
+                      <Plus className="w-4 h-4 text-gray-600" />
                     </div>
                   </div>
                 ) : (
@@ -280,25 +299,22 @@ const AddTask = () => {
                           className="w-8 h-8 rounded-full border border-gray-300"
                         />
                         <input
-                          id={`checkbox-${solver.id}`}
                           type="checkbox"
-                          className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded-sm focus:ring-blue-500"
                           checked={solvers.includes(solver.id)}
-                          onChange={(e) => {
+                          onChange={(e) =>
                             setSolvers((prev) =>
                               e.target.checked
                                 ? [...prev, solver.id]
                                 : prev.filter((id) => id !== solver.id)
-                            );
-                          }}
+                            )
+                          }
                         />
                       </div>
                     ))}
                     <button
                       type="button"
                       onClick={() => setShowSolvers(false)}
-                      className="text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors"
-                      style={{ backgroundColor: "#E6ECF0" }}
+                      className="bg-[#E6ECF0] text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors px-3 py-1 rounded-md"
                     >
                       Done
                     </button>
@@ -306,16 +322,16 @@ const AddTask = () => {
                 )}
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#004368] text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
+                disabled={isLoading}
+                className="w-full  text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
                 style={{ backgroundColor: "#004368" }}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
                     <svg
-                      className="w-5 h-5 mr-3 animate-spin text-white"
+                      className="w-5 h-5 mr-2 animate-spin"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -331,13 +347,13 @@ const AddTask = () => {
                       <path
                         className="opacity-75"
                         fill="currentColor"
-                        d="M4 12a8 8 0 1 1 16 0A8 8 0 0 1 4 12z"
+                        d="M4 12a8 8 0 018-8v8H4z"
                       />
                     </svg>
-                    Submitting...
+                    Updating...
                   </div>
                 ) : (
-                  "Submit Bug Details"
+                  "Update Task"
                 )}
               </button>
             </form>
@@ -348,4 +364,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default UpdateTask;

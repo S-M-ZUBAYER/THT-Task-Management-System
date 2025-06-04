@@ -3,8 +3,10 @@ import AddTask from "./AddTask";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
+import { useUserData } from "@/hook/useUserData";
 
-export const TaskListTable = ({ taskData, fetchData }) => {
+export const TaskListTable = ({ taskData }) => {
+  const { admin } = useUserData();
   const navigate = useNavigate();
   const handleTaskDetails = (taskId) => {
     navigate("/task-details", { state: { id: taskId } });
@@ -13,7 +15,7 @@ export const TaskListTable = ({ taskData, fetchData }) => {
     <div className="bg-white rounded-xl border p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
-        <AddTask fetchData={fetchData} />
+        {admin && <AddTask />}
       </div>
       <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">
         <table className="w-full text-sm  text-center">

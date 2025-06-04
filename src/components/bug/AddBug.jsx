@@ -135,9 +135,9 @@ const AddBug = () => {
       formData.append("findDate", new Date(values.findDate).toISOString());
       formData.append("priority", values.priority);
       formData.append("status", "Pending");
-      solvers.forEach((solver) => {
-        formData.append("assignWith", solver);
-      });
+
+      formData.append("assignWith", JSON.stringify(solvers));
+
       formData.append("bugProjectId", id);
       formData.append("createdEmail", user.email);
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
@@ -323,7 +323,7 @@ const AddBug = () => {
                 <h4 className="font-medium text-gray-700">Bug Attachments</h4>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <FileInput
-                    label="Discussion files"
+                    label="Bug files"
                     icon={icons.FilePin}
                     onChange={(e) => setFileAttachment(e.target.files[0])}
                     accept="application/pdf,text/plain"

@@ -1,10 +1,9 @@
+import { useBugData } from "@/hook/useBugData";
 import BugTableRow from "./BugTableRow";
 import icons from "@/constants/icons";
 
-import { useBugStore } from "@/Zustand/useBugsStore";
-
 export default function BugTable() {
-  const { bugs } = useBugStore();
+  const { bugs } = useBugData();
   return (
     <div className="overflow-x-auto rounded-lg  ">
       <table className="w-full text-sm text-left text-gray-600">

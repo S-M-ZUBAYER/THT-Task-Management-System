@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Search } from "lucide-react";
+import { useUserData } from "@/hook/useUserData";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useUserData();
   let imageUrl = "https://i.pravatar.cc/300";
   if (user?.image) {
     imageUrl = user.image;

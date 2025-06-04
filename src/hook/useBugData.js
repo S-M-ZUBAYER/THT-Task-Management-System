@@ -7,7 +7,7 @@ export const useBugData = () => {
   const location = useLocation();
   const { id, bugProjectName } = location.state || {};
 
-  const { setBugs } = useBugStore();
+  const { bugs, setBugs } = useBugStore();
 
   const fetchBugsById = async (projectId = id) => {
     if (!projectId) {
@@ -30,6 +30,7 @@ export const useBugData = () => {
 
   return {
     id,
+    bugs,
     projectName: bugProjectName || "",
     fetchBugsById,
   };
