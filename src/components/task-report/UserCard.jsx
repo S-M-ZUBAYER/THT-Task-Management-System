@@ -1,11 +1,11 @@
 import { ChevronRight, UserCircle } from "lucide-react";
 
-export default function UserCard({ name }) {
+export default function UserCard({ name, image }) {
   return (
     <div className="flex items-center justify-between border rounded-lg p-3 hover:shadow-sm">
       <div className="flex items-center gap-2 text-sm font-medium">
         <img
-          src="https://i.pravatar.cc/150?img=dj"
+          src={image || "https://i.pravatar.cc/150?img=dj"}
           alt="image"
           className="w-7 h-7 rounded-full"
         />

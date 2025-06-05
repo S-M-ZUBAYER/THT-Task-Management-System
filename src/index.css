@@ -206,8 +206,17 @@ button:focus-visible {
 }
 
 .rdp-button_reset {
-  background-color: #f1f1f1;
-  text-align: center;
+  background-color: #f9f9f9;
+  color: black;
+}
+
+/* globals.css */
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+  color: #000;
 }
 
 /*svg roller */

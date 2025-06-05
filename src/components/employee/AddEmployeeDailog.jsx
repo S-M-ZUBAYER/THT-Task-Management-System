@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,17 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { format } from "date-fns";
 import icons from "@/constants/icons";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
-import { CalendarDaysIcon } from "lucide-react";
+import { useEmployeeData } from "@/hook/useEmployeeData";
+import DatePicker from "../DatePicker";
 
 const employeeSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -37,16 +33,18 @@ const employeeSchema = z.object({
   image: z.any().optional(),
 });
 
-export function AddEmployeeDailog({ fetchData }) {
+export function AddEmployeeDailog() {
   const [isOpen, setIsOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { fetchData } = useEmployeeData();
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(employeeSchema),
@@ -76,6 +74,9 @@ export function AddEmployeeDailog({ fetchData }) {
       if (data.image) {
         formData.append("image", data.image);
       }
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
       const res = await axiosApi.post("/user/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -86,6 +87,8 @@ export function AddEmployeeDailog({ fetchData }) {
         toast.success("Employee added successfully");
         setIsOpen(false);
         fetchData();
+        reset();
+        setPreview(null);
       }
     } catch (error) {
       console.error("Error adding employee:", error);
@@ -112,37 +115,49 @@ export function AddEmployeeDailog({ fetchData }) {
     <>
       <div
         onClick={() => setIsOpen(true)}
-        className="hover:bg-[#004368]  border-1 border-[#004368] text-[#004368] h-[44px] w-[300px] transition-all hover:text-white flex justify-center items-center rounded-sm font-semibold"
+        className="hover:bg-[#004368] border-1 border-[#004368] text-[#004368] h-[44px] w-[300px] transition-all hover:text-white flex justify-center items-center rounded-sm font-semibold cursor-pointer"
       >
         Add new Employee
       </div>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
-          <div className="relative p-4 w-full max-w-[30vw] ">
-            <div className="relative bg-[#FFFFFF] rounded-lg shadow  dark:bg-gray-700 px-4">
-              <div
-                onClick={() => setIsOpen(false)}
-                className="absolute top-3 right-3 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                <svg
-                  className="w-3 h-3"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative p-4 w-full max-w-[30vw]"
+            >
+              <div className="relative bg-[#FFFFFF] rounded-lg shadow dark:bg-gray-700 px-4">
+                <div
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close dialog"
+                  className="absolute top-3 right-3 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
                 >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
-                  />
-                </svg>
-              </div>
+                  <svg
+                    className="w-3 h-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                </div>
 
-              <div>
-                <div className=" rounded-2xl  space-y-4">
+                <div className="rounded-2xl space-y-4">
                   <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-4 pb-8"
@@ -173,14 +188,7 @@ export function AddEmployeeDailog({ fetchData }) {
                       <label className="block text-sm font-medium mb-1">
                         Employee name
                       </label>
-                      <Input
-                        {...register("name")}
-                        style={{
-                          outline: "none",
-                          boxShadow: "none",
-                          color: "#004368",
-                        }}
-                      />
+                      <Input {...register("name")} />
                       {errors.name && (
                         <p className="text-sm text-red-500">
                           {errors.name.message}
@@ -196,11 +204,7 @@ export function AddEmployeeDailog({ fetchData }) {
                       <Input
                         type="email"
                         {...register("email")}
-                        style={{
-                          outline: "none",
-                          boxShadow: "none",
-                          color: "#004368",
-                        }}
+                        style={{ outline: "none", boxShadow: "none" }}
                       />
                       {errors.email && (
                         <p className="text-sm text-red-500">
@@ -217,11 +221,7 @@ export function AddEmployeeDailog({ fetchData }) {
                       <Input
                         type="password"
                         {...register("password")}
-                        style={{
-                          outline: "none",
-                          boxShadow: "none",
-                          color: "#004368",
-                        }}
+                        style={{ outline: "none", boxShadow: "none" }}
                       />
                       {errors.password && (
                         <p className="text-sm text-red-500">
@@ -229,7 +229,8 @@ export function AddEmployeeDailog({ fetchData }) {
                         </p>
                       )}
                     </div>
-                    {/*phone number*/}
+
+                    {/* Phone Number */}
                     <div>
                       <label className="block text-sm font-medium mb-1">
                         Employee Phone Number
@@ -237,11 +238,7 @@ export function AddEmployeeDailog({ fetchData }) {
                       <Input
                         type="text"
                         {...register("phone")}
-                        style={{
-                          outline: "none",
-                          boxShadow: "none",
-                          color: "#004368",
-                        }}
+                        style={{ outline: "none", boxShadow: "none" }}
                       />
                       {errors.phone && (
                         <p className="text-sm text-red-500">
@@ -257,10 +254,9 @@ export function AddEmployeeDailog({ fetchData }) {
                       </label>
                       <Select
                         onValueChange={(val) =>
-                          setValue("designation", val, {
-                            shouldValidate: true,
-                          })
+                          setValue("designation", val, { shouldValidate: true })
                         }
+                        value={watch("designation") || ""}
                       >
                         <SelectTrigger
                           style={{
@@ -292,59 +288,29 @@ export function AddEmployeeDailog({ fetchData }) {
 
                     {/* Joining Date */}
                     <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Joining Date
-                      </label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                            style={{
-                              backgroundColor: "transparent",
-                              outline: "none",
-                              color: "#004368",
-                            }}
-                          >
-                            <CalendarDaysIcon className="mr-2 h-4 w-4" />
-                            {watch("joiningDate")
-                              ? format(watch("joiningDate"), "dd MMM yyyy")
-                              : "Pick a date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={watch("joiningDate")}
-                            onSelect={(date) => setValue("joiningDate", date)}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      {errors.joinDate && (
-                        <p className="text-sm text-red-500">
-                          {errors.joinDate.message}
-                        </p>
-                      )}
+                      <DatePicker
+                        form={{ watch, setValue, formState: { errors } }}
+                        label="Joining Date"
+                        name="joiningDate"
+                      />
                     </div>
 
                     {/* Submit Button */}
                     <Button
                       type="submit"
-                      className="w-full bg-blue-900 text-white hover:bg-blue-800 "
-                      style={{
-                        backgroundColor: "#004368",
-                        outline: "none",
-                      }}
+                      className="w-full bg-blue-900 text-white hover:bg-blue-800"
+                      style={{ backgroundColor: "#004368", outline: "none" }}
+                      disabled={isLoading}
                     >
                       {isLoading ? "Adding..." : "Add Employee"}
                     </Button>
                   </form>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

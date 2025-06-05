@@ -18,6 +18,7 @@ import TaskReport from "../assets/icons/TaskReport.svg";
 import Login from "../assets/icons/Login.svg";
 import Docx from "../assets/icons8-docx-64.png";
 import Download from "../assets/icons/download-square-01.svg";
+import Alert from "../assets/icons/Alert.svg";
 
 export default {
   Dashboard,
@@ -40,4 +41,5 @@ export default {
   Login,
   Docx,
   Download,
+  Alert,
 };

@@ -52,15 +52,18 @@ export function AddTaskReport() {
           <motion.div
             key="modal"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            animate={{
+              transition: { duration: 1 },
+              opacity: 1,
+            }}
+            exit={{ transition: { duration: 1 }, opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-transparent bg-opacity-40 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
               className="relative p-4 w-full max-w-[40vw]"
             >
               <div className="relative bg-white rounded-lg shadow px-4">
