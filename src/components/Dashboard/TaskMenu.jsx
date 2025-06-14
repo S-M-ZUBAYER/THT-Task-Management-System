@@ -17,7 +17,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogPortal,
+  AlertDialogOverlay,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 
@@ -91,50 +92,52 @@ function TaskMenu({ id, projectName }) {
       </DropdownMenu>
       <div onClick={(e) => e.stopPropagation()} className="hidden">
         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <AlertDialogContent
-            onClick={(e) => e.stopPropagation()}
-            className="flex flex-col items-center rounded-lg bg-white p-6 max-w-md mx-auto border-none"
-          >
-            <AlertDialogHeader className="flex flex-col items-center mb-4">
-              <AlertDialogTitle className="flex flex-col items-center text-xl font-semibold text-gray-900">
-                <div className="w-10 h-10 bg-[#F8D7DA] rounded-full flex items-center justify-center mb-2">
-                  <img
-                    src={icons.Alert || "https://i.pravatar.cc/150?img=dj"}
-                    alt="Alert Icon"
-                    className="w-10"
-                  />
-                </div>
-                Delete Task
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-sm text-gray-500 text-center">
-                Are you sure want to delete this Task account?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex gap-3 ">
-              <AlertDialogCancel
-                className="px-4 py-2  text-[#004368] rounded-lg  transition-colors ring-0  focus:outline-none focus:ring-0 border-none "
-                style={{
-                  backgroundColor: "#D6E6F0",
-                  outline: "none",
-                }}
-              >
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete();
-                }}
-                className="px-4 py-2  text-[#DC3545] rounded-lg  transition-colors"
-                style={{
-                  backgroundColor: "#FFDEDE",
-                  color: "#DC3545",
-                }}
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
+          <AlertDialogPortal>
+            <AlertDialogOverlay
+              forceMount
+              className="fixed inset-0 z-50 bg-transparent backdrop-blur-sm bg-opacity-50"
+              style={{ shadow: "none" }}
+            />
+
+            <AlertDialogContent
+              onClick={(e) => e.stopPropagation()}
+              className="flex flex-col items-center rounded-lg bg-white p-6 max-w-md mx-auto border-none"
+            >
+              <AlertDialogHeader className="flex flex-col items-center mb-4">
+                <AlertDialogTitle className="flex flex-col items-center text-xl font-semibold text-gray-900">
+                  <div className="w-10 h-10 bg-[#F8D7DA] rounded-full flex items-center justify-center mb-2">
+                    <img
+                      src={icons.Alert || "https://i.pravatar.cc/150?img=dj"}
+                      alt="Alert Icon"
+                      className="w-10"
+                    />
+                  </div>
+                  Delete Task
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-sm text-gray-500 text-center">
+                  Are you sure want to delete this Task account?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex gap-3 ">
+                <AlertDialogCancel
+                  className="px-4 py-2 text-[#004368] rounded-lg transition-colors ring-0 focus:outline-none border-none"
+                  style={{ backgroundColor: "#D6E6F0", outline: "none" }}
+                >
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                  }}
+                  className="px-4 py-2 text-[#DC3545] rounded-lg transition-colors"
+                  style={{ backgroundColor: "#FFDEDE" }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogPortal>
         </AlertDialog>
       </div>
     </>
