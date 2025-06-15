@@ -19,6 +19,7 @@ import TaskReport from "./pages/TaskReport";
 import BugDetailsPage from "./pages/BugDetailsPage";
 import SignInPage from "./pages/SignInPage";
 import Animated404 from "./components/404";
+import ReportsPage from "./pages/ReportsPage";
 
 const AppLayout = () => {
   return (
@@ -71,6 +72,7 @@ const App = () => {
           <Route path="task-details" element={<SingleTaskPage />} />
           <Route path="task-report" element={<TaskReport />} />
           <Route path="bug-details" element={<BugDetailsPage />} />
+          <Route path="Reports" element={<ReportsPage />} />
           <Route path="*" element={<Animated404 />} />
         </Route>
 

@@ -9,7 +9,12 @@ export default function AllTaskReports() {
       <h2 className="font-semibold text-lg mb-4">All Task Reports</h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {userData.map((user, idx) => (
-          <UserCard key={idx} name={user.name} image={user.image} />
+          <UserCard
+            key={idx}
+            name={user.name}
+            image={user.image}
+            email={user.email}
+          />
         ))}
       </div>
     </div>
