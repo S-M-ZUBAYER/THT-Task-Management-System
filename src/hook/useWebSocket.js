@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { useUserData } from "./useUserData";
 import { useNotificationStore } from "@/Zustand/useNotificationStore";
+import notificationSound from "../assets/notification.mp3";
 
 export const useWebSocket = () => {
   const socketRef = useRef(null);
@@ -26,6 +27,8 @@ export const useWebSocket = () => {
     socketRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        const sound = new Audio(notificationSound);
+        sound.play();
         addMessage(data);
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
@@ -46,6 +49,7 @@ export const useWebSocket = () => {
   }, [user?.id, user?.role, addMessage]);
 
   const sendMessage = (payload) => {
+    console.log(payload);
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(payload));
     } else {

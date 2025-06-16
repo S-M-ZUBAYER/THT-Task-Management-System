@@ -127,8 +127,7 @@ function TaskMenu({ id, projectName }) {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete();
+                    handleDelete(e);
                   }}
                   className="px-4 py-2 text-[#DC3545] rounded-lg transition-colors"
                   style={{ backgroundColor: "#FFDEDE" }}

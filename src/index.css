@@ -229,3 +229,10 @@ input:-webkit-autofill {
     stroke-dashoffset: 0%;
   }
 }
+
+/* styles.css */
+[data-state="open"] {
+  background-color: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}

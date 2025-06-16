@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { gsap } from "gsap";
+import { motion } from "framer-motion";
 import { X, Plus } from "lucide-react";
 
 import {
@@ -12,12 +12,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Input } from "../ui/input";
 
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import useTaskColumns from "@/hook/useTasksData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { useUserData } from "@/hook/useUserData";
+import { format } from "date-fns";
 
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
@@ -35,6 +37,8 @@ const AddTask = () => {
   const [solversData, setSolversData] = useState([]);
   const modalRef = useRef(null);
   const { fetchTasks } = useTaskColumns();
+  const { sendMessage } = useWebSocket();
+  const { user } = useUserData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -66,26 +70,8 @@ const AddTask = () => {
   });
 
   const toggleModal = useCallback(() => {
-    if (!isOpen) {
-      setIsOpen(true);
-      requestAnimationFrame(() => {
-        gsap.fromTo(
-          modalRef.current,
-          { opacity: 0, y: 50, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "power2.out" }
-        );
-      });
-    } else {
-      gsap.to(modalRef.current, {
-        opacity: 0,
-        y: 50,
-        scale: 0.95,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: () => setIsOpen(false),
-      });
-    }
-  }, [isOpen]);
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const onSubmit = async (values) => {
     try {
@@ -98,10 +84,21 @@ const AddTask = () => {
         assigned_employee_ids: solvers,
       };
       await axiosApi.post("/tasks/Create", submissionData);
+      toast.success("Task created successfully!");
+      try {
+        sendMessage({
+          type: "notify_specific",
+          userIds: solvers.map(String),
+          message: "📬 One Task waiting for you",
+          name: user.name.trim(),
+          date: format(new Date(), "MM-dd-yy"),
+        });
+      } catch (error) {
+        console.log(error);
+      }
       toggleModal();
       form.reset();
       setSolvers([]);
-      toast.success("Task created successfully!");
       fetchTasks();
     } catch (error) {
       console.log(error);
@@ -123,14 +120,23 @@ const AddTask = () => {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50 ">
-          <div
-            ref={modalRef}
+        <motion.div
+          ref={modalRef}
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 50, scale: 0.95 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50"
+        >
+          <motion.div
             className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xl relative space-y-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <div
               onClick={toggleModal}
-              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors"
+              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
@@ -142,13 +148,9 @@ const AddTask = () => {
                 <label className="block text-sm font-medium mb-1">
                   Project name
                 </label>
-                <Input
+                <input
                   {...form.register("task_title")}
-                  style={{
-                    outline: "none",
-                    boxShadow: "none",
-                    color: "#004368",
-                  }}
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
                 />
                 {form.formState.errors.task_title && (
                   <p className="text-sm text-red-500">
@@ -157,10 +159,10 @@ const AddTask = () => {
                 )}
               </div>
 
-              {/* task Details */}
+              {/* Task Details */}
               <div>
                 <label
-                  htmlFor="details"
+                  htmlFor="task_details"
                   className="block font-medium text-gray-700"
                 >
                   Project Requirements
@@ -170,7 +172,7 @@ const AddTask = () => {
                   rows={4}
                   {...form.register("task_details")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="project requirements here..."
+                  placeholder="Project requirements here..."
                 />
                 {form.formState.errors.task_details && (
                   <p className="mt-1 text-sm text-red-600">
@@ -178,8 +180,8 @@ const AddTask = () => {
                   </p>
                 )}
               </div>
-              {/* Date */}
 
+              {/* Date */}
               <div className="flex gap-4 w-full">
                 <div className="w-1/2">
                   <DatePicker
@@ -197,7 +199,7 @@ const AddTask = () => {
                 </div>
               </div>
 
-              {/* Priority */}
+              {/* Status */}
               <div>
                 <label
                   htmlFor="status"
@@ -212,7 +214,7 @@ const AddTask = () => {
                   }
                 >
                   <SelectTrigger
-                    id="priority"
+                    id="status"
                     className="w-full mt-1 border-[#B0C5D0] focus:ring-[#004368] focus:border-[#004368]"
                     style={{
                       backgroundColor: "transparent",
@@ -233,7 +235,7 @@ const AddTask = () => {
                 </Select>
               </div>
 
-              {/* Bug Solver */}
+              {/* Assign Task to */}
               <div>
                 <h4 className="font-medium text-gray-700">Assign task to</h4>
 
@@ -341,8 +343,8 @@ const AddTask = () => {
                 )}
               </button>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </>
   );

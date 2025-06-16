@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Search } from "lucide-react";
 import { useUserData } from "@/hook/useUserData";
-import NotificationDropdown from "./NotificationDropdown";
+import NotificationDrawer from "./NotificationDropdown";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
@@ -35,7 +35,7 @@ const Navbar = () => {
         <Search className="text-[#B0C5D0]" />
       </div>
       <div className="border-1 border-[#B0C5D0] rounded-full ">
-        <NotificationDropdown />
+        <NotificationDrawer />
       </div>
       <div className="flex items-center gap-4">
         <Avatar>
