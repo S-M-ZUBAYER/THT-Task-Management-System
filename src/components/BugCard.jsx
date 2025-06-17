@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 const BugCard = ({ bugs, bugProjectName, id }) => {
   const navigate = useNavigate();
   const handleBugClick = () => {
-    navigate("/bug-details", {
-      state: { id, bugProjectName },
-    });
+    navigate(`/bug-details/${id}/${bugProjectName}`);
   };
   return (
     <div

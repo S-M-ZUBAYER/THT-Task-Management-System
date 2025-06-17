@@ -17,6 +17,8 @@ import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
 import { useBugData } from "@/hook/useBugData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { format } from "date-fns";
 
 const schema = z.object({
   BugDetails: z.string().min(3, "Bug details required"),
@@ -60,6 +62,7 @@ const AddBug = () => {
   const modalRef = useRef(null);
   const { id, projectName, fetchBugsById } = useBugData();
   const user = JSON.parse(localStorage.getItem("user"));
+  const { sendMessage } = useWebSocket();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -119,7 +122,6 @@ const AddBug = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      console.log(projectName, id, user.email);
       if (!projectName || !id || !user.email) {
         throw new Error("Bug store data is incomplete");
       }
@@ -141,17 +143,25 @@ const AddBug = () => {
       formData.append("bugProjectId", id);
       formData.append("createdEmail", user.email);
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
 
       const res = await axiosApi.post("/bug/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log(res.data);
 
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
+        try {
+          sendMessage({
+            type: "notify_specific",
+            userIds: solvers.map(String),
+            message: "📬 One Bug waiting for you",
+            name: user.name.trim(),
+            date: format(new Date(), "MM-dd-yyyy"),
+            path: `/bug-details/${id}/${projectName}`,
+          });
+        } catch (error) {
+          console.error("Error sending WebSocket message:", error);
+        }
         toggleModal();
         form.reset();
         setSolvers([]);

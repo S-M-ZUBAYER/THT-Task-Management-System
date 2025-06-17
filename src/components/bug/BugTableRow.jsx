@@ -50,7 +50,7 @@ export default function BugTableRow({ bug }) {
       </td>
 
       <td className="px-4 py-3">
-        <StatusDropdown current={status} id={id} />
+        <StatusDropdown current={status} id={id} bugName={BugDetails} />
       </td>
     </tr>
   );

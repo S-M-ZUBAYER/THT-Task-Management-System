@@ -83,7 +83,7 @@ const AddTask = () => {
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
-      await axiosApi.post("/tasks/Create", submissionData);
+      const res = await axiosApi.post("/tasks/Create", submissionData);
       toast.success("Task created successfully!");
       try {
         sendMessage({
@@ -91,7 +91,8 @@ const AddTask = () => {
           userIds: solvers.map(String),
           message: "📬 One Task waiting for you",
           name: user.name.trim(),
-          date: format(new Date(), "MM-dd-yy"),
+          date: format(new Date(), "MM-dd-yyyy"),
+          path: `/task-details/${res.data.result.insertId}`,
         });
       } catch (error) {
         console.log(error);

@@ -10,9 +10,16 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useNavigate } from "react-router-dom";
 
 const NotificationDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleNavigation = (path) => {
+    setIsOpen(false);
+    console.log(path);
+    navigate(path);
+  };
 
   useWebSocket();
   const { unreadCount, messages, clearUnread } = useNotificationStore();
@@ -44,11 +51,12 @@ const NotificationDrawer = () => {
           {messages.length === 0 ? (
             <p className="text-sm text-gray-500">No notifications</p>
           ) : (
-            <ul>
+            <ul className="space-y-2">
               {messages.map((msg, index) => (
                 <li
                   key={index}
-                  className="px-2 py-2 border-b last:border-b-0 hover:bg-gray-100 text-sm"
+                  className="px-2 py-2 border-b last:border-b-0 hover:bg-gray-400 text-sm bg-gray-100 rounded-md "
+                  onClick={() => handleNavigation(msg.path)}
                 >
                   <strong>From:</strong> {msg.name}
                   <br />

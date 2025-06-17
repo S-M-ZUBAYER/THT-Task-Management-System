@@ -7,7 +7,7 @@ export const useNotificationStore = create((set) => ({
   setUnreadCount: (count) => set({ unreadCount: count }),
   addMessage: (msg) =>
     set((state) => ({
-      messages: [...state.messages, msg],
+      messages: [msg, ...state.messages],
       unreadCount: state.unreadCount + 1,
     })),
   clearUnread: () => set({ unreadCount: 0 }),

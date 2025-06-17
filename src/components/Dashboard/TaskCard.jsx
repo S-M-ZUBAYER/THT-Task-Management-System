@@ -39,7 +39,7 @@ const TaskCard = ({
     <div
       className="bg-white rounded-xl border-2 p-4 space-y-3 border-[#E8D9FF]"
       onClick={() => {
-        navigate("/task-details", { state: { id } });
+        navigate(`/task-details/${id}`);
       }}
     >
       <div className="text-xs text-purple-600 font-bold flex justify-between">

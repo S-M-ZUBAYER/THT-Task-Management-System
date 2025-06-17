@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { axiosApi } from "@/lib/axiosApi";
 import { useBugStore } from "@/Zustand/useBugsStore";
 
 export const useBugData = () => {
-  const location = useLocation();
-  const { id, bugProjectName } = location.state || {};
+  const { id, bugProjectName } = useParams();
 
   const { bugs, setBugs } = useBugStore();
 

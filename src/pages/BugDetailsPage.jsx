@@ -3,7 +3,7 @@ import BugTable from "@/components/bug/BugTable";
 
 export default function BugDetailsPage() {
   return (
-    <div className="p-6 md:p-10 min-h-screen w-[80vw]">
+    <div className="p-6 md:p-10  w-[80vw]">
       <BugHeader />
       <BugTable />
     </div>

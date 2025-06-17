@@ -9,7 +9,7 @@ export const TaskListTable = ({ taskData }) => {
   const { admin } = useUserData();
   const navigate = useNavigate();
   const handleTaskDetails = (taskId) => {
-    navigate("/task-details", { state: { id: taskId } });
+    navigate(`/task-details/${taskId}`);
   };
   return (
     <div className="bg-white rounded-xl border p-4">
