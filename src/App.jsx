@@ -75,7 +75,7 @@ const App = () => {
             path="bug-details/:id/:bugProjectName"
             element={<BugDetailsPage />}
           />
-          <Route path="Reports" element={<ReportsPage />} />
+          <Route path="Reports/:email/:name" element={<ReportsPage />} />
           <Route path="*" element={<Animated404 />} />
         </Route>
 

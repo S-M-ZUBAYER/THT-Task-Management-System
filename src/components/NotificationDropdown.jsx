@@ -47,22 +47,33 @@ const NotificationDrawer = () => {
           <DrawerTitle>Notifications</DrawerTitle>
           <DrawerDescription>Your recent messages</DrawerDescription>
         </DrawerHeader>
-        <div className="max-h-[calc(100vh-160px)] overflow-y-auto px-4">
+        <div className="max-h-[calc(100vh-160px)] overflow-y-auto px-4 custom-scrollbar">
           {messages.length === 0 ? (
             <p className="text-sm text-gray-500">No notifications</p>
           ) : (
-            <ul className="space-y-2">
-              {messages.map((msg, index) => (
-                <li
-                  key={index}
-                  className="px-2 py-2 border-b last:border-b-0 hover:bg-gray-400 text-sm bg-gray-100 rounded-md "
-                  onClick={() => handleNavigation(msg.path)}
-                >
-                  <strong>From:</strong> {msg.name}
-                  <br />
-                  <span>{msg.message}</span>
-                </li>
-              ))}
+            <ul className="space-y-2 list-none ">
+              {messages.map((msg, index) => {
+                const prevMsg = messages[index - 1];
+                const showDateHeader = index === 0 || msg.date !== prevMsg.date;
+
+                return (
+                  <div key={index}>
+                    {showDateHeader && (
+                      <p className="text-xs font-semibold text-gray-500 my-2 text-center ">
+                        {msg.date}
+                      </p>
+                    )}
+                    <li
+                      className="px-2 py-2 border-b last:border-b-0 hover:bg-gray-400 text-sm bg-gray-100 rounded-md"
+                      onClick={() => handleNavigation(msg.path)}
+                    >
+                      <strong>From:</strong> {msg.name}
+                      <br />
+                      <span>{msg.message}</span>
+                    </li>
+                  </div>
+                );
+              })}
             </ul>
           )}
         </div>

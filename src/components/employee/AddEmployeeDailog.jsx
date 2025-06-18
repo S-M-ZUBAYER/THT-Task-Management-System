@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,6 +18,8 @@ import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import { useEmployeeData } from "@/hook/useEmployeeData";
 import DatePicker from "../DatePicker";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { useUserData } from "@/hook/useUserData";
 
 const employeeSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -38,6 +39,8 @@ export function AddEmployeeDailog() {
   const [preview, setPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { fetchData } = useEmployeeData();
+  const { sendMessage } = useWebSocket();
+  const { user } = useUserData();
 
   const {
     register,
@@ -85,6 +88,21 @@ export function AddEmployeeDailog() {
 
       if (res.status === 201) {
         toast.success("Employee added successfully");
+        try {
+          sendMessage({
+            type: "notify_admins",
+            message: `New Employee added: ${data.name}`,
+            name: user.name.trim(),
+            date: format(new Date(), "MM-dd-yyyy"),
+            path: "/employees",
+          });
+        } catch (error) {
+          console.error("Error updating bug status:", error);
+          toast.error(
+            error.response?.data?.message ||
+              "Failed to notify employee addition"
+          );
+        }
         setIsOpen(false);
         fetchData();
         reset();
@@ -188,7 +206,10 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee name
                       </label>
-                      <Input {...register("name")} />
+                      <input
+                        {...register("name")}
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
+                      />
                       {errors.name && (
                         <p className="text-sm text-red-500">
                           {errors.name.message}
@@ -201,10 +222,10 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee email
                       </label>
-                      <Input
+                      <input
                         type="email"
                         {...register("email")}
-                        style={{ outline: "none", boxShadow: "none" }}
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
                       />
                       {errors.email && (
                         <p className="text-sm text-red-500">
@@ -218,10 +239,10 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee Password
                       </label>
-                      <Input
+                      <input
                         type="password"
                         {...register("password")}
-                        style={{ outline: "none", boxShadow: "none" }}
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
                       />
                       {errors.password && (
                         <p className="text-sm text-red-500">
@@ -235,10 +256,10 @@ export function AddEmployeeDailog() {
                       <label className="block text-sm font-medium mb-1">
                         Employee Phone Number
                       </label>
-                      <Input
+                      <input
                         type="text"
                         {...register("phone")}
-                        style={{ outline: "none", boxShadow: "none" }}
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
                       />
                       {errors.phone && (
                         <p className="text-sm text-red-500">

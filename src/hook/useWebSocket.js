@@ -1,13 +1,30 @@
-// /hook/useWebSocket.js
 import { useEffect, useRef } from "react";
 import { useUserData } from "./useUserData";
 import { useNotificationStore } from "@/Zustand/useNotificationStore";
 import notificationSound from "../assets/notification.mp3";
+import { axiosApi } from "@/lib/axiosApi";
 
 export const useWebSocket = () => {
   const socketRef = useRef(null);
   const { user } = useUserData();
-  const { addMessage } = useNotificationStore();
+  const { messages, addMessage, setMessages } = useNotificationStore();
+
+  const getNotification = async () => {
+    try {
+      const res = await axiosApi.get(`/notification/${user.id}`);
+      if (res.data.data && res.data.data.length > 0) {
+        setMessages(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching notification:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      getNotification();
+    }
+  }, []);
 
   useEffect(() => {
     if (!user?.id || !user?.role) return;

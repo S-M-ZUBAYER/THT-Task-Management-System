@@ -5,7 +5,7 @@ export default function UserCard({ name, image, email }) {
   const navigate = useNavigate();
 
   const handleNavigation = () => {
-    navigate("/reports", { state: { email, name } });
+    navigate(`/reports/${email}/${name}`);
   };
 
   return (

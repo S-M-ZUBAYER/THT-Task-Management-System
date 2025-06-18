@@ -5,12 +5,15 @@ import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTaskReportData } from "@/hook/useTaskReportData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { format } from "date-fns";
 
 export function AddTaskReport() {
   const [isOpen, setIsOpen] = useState(false);
   const [detail, setDetails] = useState("");
   const { user } = useUserData();
   const { getTasksReport } = useTaskReportData();
+  const { sendMessage } = useWebSocket();
 
   const handleAddTaskReport = async () => {
     if (!detail.trim()) {
@@ -29,6 +32,20 @@ export function AddTaskReport() {
       };
       await axiosApi.post("/dailyTaskReport/create", payload);
       toast.success("Task Report submitted successfully.");
+      try {
+        sendMessage({
+          type: "notify_admins",
+          message: `New Task Report submitted by ${user.name}`,
+          name: user.name.trim(),
+          date: format(new Date(), "MM-dd-yyyy"),
+          path: `/Reports/${user.email}/${user.name.trim()}`,
+        });
+      } catch (error) {
+        console.error("Error updating bug status:", error);
+        toast.error(
+          error.response?.data?.message || "Failed to notify  Task Report"
+        );
+      }
       setIsOpen(false);
       setDetails("");
       getTasksReport();

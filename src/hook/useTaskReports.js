@@ -15,7 +15,8 @@ export const useTaskReports = (email) => {
         const res = await axios.get(
           `https://grozziie.zjweiting.com:57683/tht/taskManagement/api/dailyTaskReport/email/${email}`
         );
-        setAllData(res.data?.result || []);
+        const resData = res.data?.result || [];
+        setAllData(resData.sort((a, b) => b.id - a.id));
         setError(null);
       } catch (err) {
         setError(err.message || "Failed to fetch reports");

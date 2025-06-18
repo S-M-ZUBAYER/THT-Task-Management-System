@@ -1,6 +1,6 @@
 export default function TaskCard({ employeeName, reportDetails, image }) {
   return (
-    <div className="border rounded-lg p-4">
+    <div className="border rounded-lg p-4 ">
       <div className="flex items-center space-x-2 mb-2 text-sm font-medium">
         <img
           src={image || "https://i.pravatar.cc/150?img"}
@@ -9,9 +9,11 @@ export default function TaskCard({ employeeName, reportDetails, image }) {
         />
         <span>{employeeName}</span>
       </div>
-      <ol className="list-decimal text-sm text-gray-700 pl-5 mt-5">
-        {reportDetails}
-      </ol>
+      <ul className="text-sm list-decimal pl-5">
+        <p className="break-words whitespace-pre-line max-w-full">
+          {reportDetails}
+        </p>
+      </ul>
     </div>
   );
 }

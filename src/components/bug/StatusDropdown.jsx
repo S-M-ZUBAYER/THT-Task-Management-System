@@ -32,7 +32,7 @@ export default function StatusDropdown({ current, id, bugName }) {
       } catch (error) {
         console.error("Error updating bug status:", error);
         toast.error(
-          error.response?.data?.message || "Failed to update bug status"
+          error.response?.data?.message || "Failed to notify bug status"
         );
       }
     } catch (error) {

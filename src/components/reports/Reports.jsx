@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTaskReports } from "../../hook/useTaskReports";
 import { ReportDatePicker } from "../reports-date-picker";
 import icons from "@/constants/icons";
 
 const Reports = () => {
-  const location = useLocation();
-  const email = location.state?.email || "";
-  const name = location.state?.name || "";
+  const { email, name } = useParams();
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const { allData, loading, error } = useTaskReports(email);
 
-  // Filter reports only if both dates are selected
   const filteredData =
     startDate && endDate
       ? allData.filter((report) => {
@@ -68,12 +65,15 @@ const Reports = () => {
         {filteredData.map((report) => (
           <div
             key={report.id}
-            className="border p-4  shadow-sm border-[#F0E6FF] rounded-[8px] "
+            className="border p-4  shadow-sm border-[#F0E6FF] rounded-[8px] flex flex-col justify-between h-auto  hover:shadow-md transition-all duration-200 "
           >
             <ul className="text-sm list-decimal pl-5">
-              <li>{report.reportDetails}</li>
+              <p className="break-words whitespace-pre-line max-w-full">
+                {report.reportDetails}
+              </p>
             </ul>
-            <div className="mt-2 text-sm text-[#004368] flex gap-1.5 items-center ">
+
+            <div className="mt-2 text-sm text-[#004368] flex gap-1.5 items-center justify-end ">
               <span>
                 {" "}
                 <svg
