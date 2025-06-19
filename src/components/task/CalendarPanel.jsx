@@ -121,7 +121,7 @@ export const CalendarPanel = () => {
               selectedDate.getDate() === day &&
               selectedDate.getMonth() === currentDate.getMonth() &&
               selectedDate.getFullYear() === currentDate.getFullYear()
-                ? "bg-[#004368] text-white"
+                ? ""
                 : ""
             }`}
             disabled={!day}

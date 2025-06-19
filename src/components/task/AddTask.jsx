@@ -86,16 +86,18 @@ const AddTask = () => {
       const res = await axiosApi.post("/tasks/Create", submissionData);
       toast.success("Task created successfully!");
       try {
+        const taskMessage = `<strong>Task Status:</strong><p>New bug waiting for you</p>`;
         sendMessage({
           type: "notify_specific",
           userIds: solvers.map(String),
-          message: "📬 One Task waiting for you",
+          message: taskMessage,
           name: user.name.trim(),
           date: format(new Date(), "MM-dd-yyyy"),
           path: `/task-details/${res.data.result.insertId}`,
         });
       } catch (error) {
-        console.log(error);
+        console.error("Failed to send notification:", error);
+        toast.error("Failed to send notification. Please try again later.");
       }
       toggleModal();
       form.reset();

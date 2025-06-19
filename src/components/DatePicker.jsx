@@ -26,7 +26,7 @@ function DatePicker({ form, label, name = "date" }) {
               "w-full mt-1 p-2 border border-[#B0C5D0] rounded-md flex items-center justify-between text-left focus:ring-2 focus:ring-[#004368] focus:border-[#004368] cursor-pointer"
             )}
           >
-            <span className="text-gray-700">
+            <span className="text-[#004368] ">
               {selectedDate
                 ? format(selectedDate, "dd MMM yyyy")
                 : "Pick a date"}

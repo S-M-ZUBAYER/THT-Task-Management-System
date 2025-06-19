@@ -119,7 +119,7 @@ export function AddTaskReport() {
                   <div className="mb-6">
                     <label
                       htmlFor="message"
-                      className="block mb-2 text-sm font-medium text-gray-900"
+                      className=" text-sm text-start flex font-medium text-gray-900 mb-2.5"
                     >
                       Write your task report
                     </label>

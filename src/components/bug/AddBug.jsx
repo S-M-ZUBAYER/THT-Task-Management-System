@@ -151,10 +151,11 @@ const AddBug = () => {
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
         try {
+          const bugMessage = `<strong>Bug Status:</strong><p>New bug waiting for you</p>`;
           sendMessage({
             type: "notify_specific",
             userIds: solvers.map(String),
-            message: "📬 One Bug waiting for you",
+            message: bugMessage,
             name: user.name.trim(),
             date: format(new Date(), "MM-dd-yyyy"),
             path: `/bug-details/${id}/${projectName}`,

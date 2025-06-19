@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import { useUserData } from "@/hook/useUserData";
 
-export const TaskListTable = ({ taskData }) => {
+export const TaskListTable = ({ taskData, loading }) => {
   const { admin } = useUserData();
   const navigate = useNavigate();
   const handleTaskDetails = (taskId) => {
@@ -21,7 +21,7 @@ export const TaskListTable = ({ taskData }) => {
         <table className="w-full text-sm  text-center">
           <thead className="text-muted-foreground border-b">
             <tr className="text-[#004368]">
-              <th className="p-2">Name</th>
+              <th className="p-2 text-left">Name</th>
               <th>
                 <div className="flex text-[#004368] justify-center items-center gap-1.5">
                   <Calendar className="w-4 h-4 " />
@@ -50,7 +50,7 @@ export const TaskListTable = ({ taskData }) => {
                     className="border-b cursor-pointer"
                     onClick={() => handleTaskDetails(taskInfo.id)}
                   >
-                    <td className="p-2">{taskInfo.task_title}</td>
+                    <td className="p-2 text-left">{taskInfo.task_title}</td>
 
                     <td className="p-2">
                       {format(
@@ -92,7 +92,11 @@ export const TaskListTable = ({ taskData }) => {
             ) : (
               <tr>
                 <td colSpan={6} className="text-center p-4 text-gray-500">
-                  <Loader />
+                  {loading ? (
+                    <Loader />
+                  ) : (
+                    "No tasks available. Please add a task."
+                  )}
                 </td>
               </tr>
             )}

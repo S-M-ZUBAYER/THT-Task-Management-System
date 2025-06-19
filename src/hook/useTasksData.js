@@ -62,7 +62,7 @@ export default function useTaskColumns() {
     if (tasksByStatus.flat().length === 0) {
       fetchTasks();
     }
-  }, [tasksByStatus]);
+  }, []);
 
   const removeTaskById = (idToRemove) => {
     const updated = tasksByStatus.map((group) =>

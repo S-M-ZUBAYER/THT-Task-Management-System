@@ -27,7 +27,7 @@ const TaskStatus = ({ current, assign }) => {
       try {
         sendMessage({
           type: "notify_admins",
-          message: `Task status updated to ${value} by ${user.name.trim()}`,
+          message: `<strong>Task Status:</strong> <p>updated to ${value} by ${user.name.trim()}<p/>`,
           name: user.name.trim(),
           date: format(new Date(), "MM-dd-yyyy"),
           path: `/task-details/${id}`,

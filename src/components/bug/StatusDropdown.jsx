@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { useUserData } from "@/hook/useUserData";
 
 export default function StatusDropdown({ current, id, bugName }) {
-  const { id: projectId, projectName } = useBugData();
+  const { id: projectId, projectName, fetchBugsById } = useBugData();
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
 
@@ -21,6 +21,7 @@ export default function StatusDropdown({ current, id, bugName }) {
     try {
       await axiosApi.post(`/bugStatus/${id}`, { status: value });
       toast.success("Bug status updated successfully");
+      fetchBugsById();
       try {
         sendMessage({
           type: "notify_admins",

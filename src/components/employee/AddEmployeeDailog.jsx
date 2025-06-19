@@ -208,7 +208,7 @@ export function AddEmployeeDailog() {
                       </label>
                       <input
                         {...register("name")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                       />
                       {errors.name && (
                         <p className="text-sm text-red-500">
@@ -225,7 +225,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="email"
                         {...register("email")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                       />
                       {errors.email && (
                         <p className="text-sm text-red-500">
@@ -242,7 +242,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="password"
                         {...register("password")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                       />
                       {errors.password && (
                         <p className="text-sm text-red-500">
@@ -259,7 +259,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="text"
                         {...register("phone")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                       />
                       {errors.phone && (
                         <p className="text-sm text-red-500">
@@ -284,11 +284,12 @@ export function AddEmployeeDailog() {
                             backgroundColor: "transparent",
                             outline: "none",
                             color: "#004368",
+                            width: "100%",
                           }}
                         >
                           <SelectValue placeholder="Select designation" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent style={{ backgroundColor: "white" }}>
                           <SelectItem value="Software Engineer">
                             Software Engineer
                           </SelectItem>
