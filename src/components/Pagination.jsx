@@ -9,7 +9,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-function TaskReportPagination({ handlePageChange, currentPage, totalPages }) {
+function CustomPagination({ handlePageChange, currentPage, totalPages }) {
   return (
     <div>
       <Pagination>
@@ -63,4 +63,4 @@ function TaskReportPagination({ handlePageChange, currentPage, totalPages }) {
   );
 }
 
-export default TaskReportPagination;
+export default CustomPagination;

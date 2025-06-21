@@ -155,7 +155,7 @@ const AddDiscuss = () => {
 
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 text-[0.8vw] "
+              className="space-y-6 text-[0.8vw] font-normal "
             >
               {/* Discussion Title */}
               <div>
@@ -168,7 +168,7 @@ const AddDiscuss = () => {
                 <input
                   id="title"
                   {...form.register("title")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw] "
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Describe the discuss title"
                 />
                 {form.formState.errors.title && (
@@ -190,7 +190,7 @@ const AddDiscuss = () => {
                   id="details"
                   rows={4}
                   {...form.register("details")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw]"
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Describe the discuss Details"
                 />
                 {form.formState.errors.details && (
@@ -268,7 +268,10 @@ const AddDiscuss = () => {
                     <button
                       type="button"
                       onClick={() => setShowSolvers(false)}
-                      className="bg-[#E6ECF0] text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors px-3 py-1 rounded-md"
+                      style={{
+                        backgroundColor: "#004368",
+                        color: "white",
+                      }}
                     >
                       Done
                     </button>

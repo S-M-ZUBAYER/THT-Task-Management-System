@@ -34,7 +34,7 @@ function EmployeeCard({ employee, show }) {
             size={14}
             className="text-[#B0C5D0] hover:text-[#004368] transition-colors duration-300"
           />
-          <span>{new Date(employee.created_at).toLocaleDateString()}</span>
+          <span>{new Date(employee.joiningDate).toLocaleDateString()}</span>
         </div>
 
         <div className="flex items-center gap-2">

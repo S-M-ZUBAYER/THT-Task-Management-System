@@ -1,7 +1,10 @@
 import { create } from "zustand";
-export const useNotificationStore = create((set) => ({
+export const useNotificationStore = create((set, get) => ({
   unreadCount: 0,
   messages: [],
+  seenMessageIds: new Set(
+    JSON.parse(localStorage.getItem("seenMessageIds") || "[]")
+  ),
 
   setUnreadCount: (count) => set({ unreadCount: count }),
 
@@ -12,12 +15,9 @@ export const useNotificationStore = create((set) => ({
     })),
 
   setMessages: (msgs) => {
-    const lastSeenId =
-      Number(localStorage.getItem("lastSeenNotificationId")) || 0;
-
+    const seenIds = get().seenMessageIds;
     const sortedMessages = msgs.sort((a, b) => b.id - a.id);
-
-    const unreadMessages = sortedMessages.filter((msg) => msg.id > lastSeenId);
+    const unreadMessages = sortedMessages.filter((msg) => !seenIds.has(msg.id));
 
     set({
       messages: sortedMessages,
@@ -25,12 +25,19 @@ export const useNotificationStore = create((set) => ({
     });
   },
 
-  clearUnread: () =>
-    set((state) => {
-      const highestId = state.messages?.[0]?.id;
-      if (typeof highestId === "number") {
-        localStorage.setItem("lastSeenNotificationId", highestId.toString());
-      }
-      return { unreadCount: 0 };
-    }),
+  markAsRead: (id) => {
+    const seen = new Set(get().seenMessageIds);
+    if (!seen.has(id)) {
+      seen.add(id);
+      localStorage.setItem("seenMessageIds", JSON.stringify([...seen]));
+      const unread = get().messages.filter((msg) => !seen.has(msg.id)).length;
+      set({ seenMessageIds: seen, unreadCount: unread });
+    }
+  },
+
+  clearUnread: () => {
+    const seen = new Set(get().messages.map((m) => m.id));
+    localStorage.setItem("seenMessageIds", JSON.stringify([...seen]));
+    set({ seenMessageIds: seen, unreadCount: 0 });
+  },
 }));

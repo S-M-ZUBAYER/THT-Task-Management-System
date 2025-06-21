@@ -10,16 +10,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CalendarDaysIcon, X } from "lucide-react";
+import { X } from "lucide-react";
 import toast from "react-hot-toast";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectTrigger,
@@ -161,7 +154,10 @@ export const UpdateEmployeeDialog = forwardRef(({ employee }, ref) => {
 
             <div>
               <label>Name</label>
-              <Input {...register("name")} />
+              <input
+                {...register("name")}
+                className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] autofill-blue "
+              />
               {errors.name && (
                 <p className="text-sm text-red-500">{errors.name.message}</p>
               )}
@@ -169,12 +165,19 @@ export const UpdateEmployeeDialog = forwardRef(({ employee }, ref) => {
 
             <div>
               <label>Email</label>
-              <Input value={employee.email} readOnly className="bg-gray-100" />
+              <input
+                value={employee.email}
+                readOnly
+                className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] autofill-blue "
+              />
             </div>
 
             <div>
               <label>Phone</label>
-              <Input {...register("phone")} />
+              <input
+                {...register("phone")}
+                className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] autofill-blue "
+              />
               {errors.phone && (
                 <p className="text-sm text-red-500">{errors.phone.message}</p>
               )}
@@ -189,7 +192,11 @@ export const UpdateEmployeeDialog = forwardRef(({ employee }, ref) => {
                 }
               >
                 <SelectTrigger
-                  style={{ backgroundColor: "white", outline: "none" }}
+                  style={{
+                    backgroundColor: "white",
+                    outline: "none",
+                    color: "#004368",
+                  }}
                 >
                   <SelectValue placeholder="Select designation" />
                 </SelectTrigger>

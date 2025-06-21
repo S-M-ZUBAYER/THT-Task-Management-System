@@ -208,7 +208,7 @@ export function AddEmployeeDailog() {
                       </label>
                       <input
                         {...register("name")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 autofill-blue "
                       />
                       {errors.name && (
                         <p className="text-sm text-red-500">
@@ -225,7 +225,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="email"
                         {...register("email")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 autofill-blue"
                       />
                       {errors.email && (
                         <p className="text-sm text-red-500">
@@ -242,7 +242,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="password"
                         {...register("password")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 autofill-blue"
                       />
                       {errors.password && (
                         <p className="text-sm text-red-500">
@@ -259,7 +259,7 @@ export function AddEmployeeDailog() {
                       <input
                         type="text"
                         {...register("phone")}
-                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
+                        className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 autofill-blue"
                       />
                       {errors.phone && (
                         <p className="text-sm text-red-500">

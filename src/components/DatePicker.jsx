@@ -41,9 +41,11 @@ function DatePicker({ form, label, name = "date" }) {
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={(value) =>
-              value && form.setValue(name, value, { shouldValidate: true })
-            }
+            onSelect={(value) => {
+              console.log("Selected value:", value, typeof value);
+              console.log(name, "name");
+              value && form.setValue(name, value, { shouldValidate: true });
+            }}
             initialFocus
             className="bg-white rounded-md shadow-lg p-4"
           />

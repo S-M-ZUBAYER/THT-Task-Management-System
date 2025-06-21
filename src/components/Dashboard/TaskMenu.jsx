@@ -28,7 +28,6 @@ function TaskMenu({ id, projectName }) {
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
-      console.log(projectName, "id", id);
       await axiosApi.post("/delete-task", {
         task_id: id,
         projectName,

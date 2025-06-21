@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTaskReportData } from "@/hook/useTaskReportData";
 import { AddTaskReport } from "./AddTaskReport";
-import TaskReportPagination from "./Pagination";
+import CustomPagination from "../Pagination";
 import TaskCard from "./TaskCard";
 
 const ITEMS_PER_PAGE = 3;
@@ -50,7 +50,7 @@ export default function TodaysTaskReports() {
       </div>
 
       <div className="flex justify-end mt-4 space-x-2 text-sm text-gray-500">
-        <TaskReportPagination
+        <CustomPagination
           currentPage={currentPage}
           handlePageChange={handlePageChange}
           totalPages={totalPages}
