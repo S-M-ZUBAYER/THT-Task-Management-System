@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { axiosApi } from "@/lib/axiosApi";
 import { useTaskStore } from "@/Zustand/useTaskStore";
 
 export default function useTaskData() {
-  const location = useLocation();
-  const { id } = location.state || {};
+  const { id } = useParams();
   const { setTask } = useTaskStore();
 
   const fetchTaskById = async (taskId = id) => {

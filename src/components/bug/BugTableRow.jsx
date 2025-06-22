@@ -1,8 +1,10 @@
 import UserAvatars from "./UserAvatars";
 import StatusDropdown from "./StatusDropdown";
 import icons from "@/constants/icons";
+import { useUserData } from "@/hook/useUserData";
 
 export default function BugTableRow({ bug }) {
+  const { user } = useUserData();
   const {
     BugDetails = "",
     findDate,
@@ -13,7 +15,7 @@ export default function BugTableRow({ bug }) {
     status = "Open",
     id,
   } = bug;
-
+  const authorized = assignWith.some((item) => item.id === user.id);
   return (
     <tr className="border-b hover:bg-muted transition-colors">
       <td className="px-4 py-3 max-w-xs truncate" title={BugDetails}>
@@ -50,7 +52,11 @@ export default function BugTableRow({ bug }) {
       </td>
 
       <td className="px-4 py-3">
-        <StatusDropdown current={status} id={id} />
+        {authorized ? (
+          <StatusDropdown current={status} id={id} bugName={BugDetails} />
+        ) : (
+          <span className="text-muted-foreground">{status}</span>
+        )}
       </td>
     </tr>
   );

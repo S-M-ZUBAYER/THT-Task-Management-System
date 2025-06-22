@@ -5,12 +5,15 @@ import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTaskReportData } from "@/hook/useTaskReportData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { format } from "date-fns";
 
 export function AddTaskReport() {
   const [isOpen, setIsOpen] = useState(false);
   const [detail, setDetails] = useState("");
   const { user } = useUserData();
   const { getTasksReport } = useTaskReportData();
+  const { sendMessage } = useWebSocket();
 
   const handleAddTaskReport = async () => {
     if (!detail.trim()) {
@@ -29,6 +32,20 @@ export function AddTaskReport() {
       };
       await axiosApi.post("/dailyTaskReport/create", payload);
       toast.success("Task Report submitted successfully.");
+      try {
+        sendMessage({
+          type: "notify_admins",
+          message: `New Task Report submitted by ${user.name}`,
+          name: user.name.trim(),
+          date: format(new Date(), "MM-dd-yyyy"),
+          path: `/Reports/${user.email}/${user.name.trim()}`,
+        });
+      } catch (error) {
+        console.error("Error updating bug status:", error);
+        toast.error(
+          error.response?.data?.message || "Failed to notify  Task Report"
+        );
+      }
       setIsOpen(false);
       setDetails("");
       getTasksReport();
@@ -52,15 +69,18 @@ export function AddTaskReport() {
           <motion.div
             key="modal"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            animate={{
+              transition: { duration: 1 },
+              opacity: 1,
+            }}
+            exit={{ transition: { duration: 1 }, opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-transparent bg-opacity-40 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
               className="relative p-4 w-full max-w-[40vw]"
             >
               <div className="relative bg-white rounded-lg shadow px-4">
@@ -99,7 +119,7 @@ export function AddTaskReport() {
                   <div className="mb-6">
                     <label
                       htmlFor="message"
-                      className="block mb-2 text-sm font-medium text-gray-900"
+                      className=" text-sm text-start flex font-medium text-gray-900 mb-2.5"
                     >
                       Write your task report
                     </label>
@@ -110,6 +130,7 @@ export function AddTaskReport() {
                       onChange={(e) => setDetails(e.target.value)}
                       className="block p-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Your Task Report..."
+                      style={{ outline: "none" }}
                     ></textarea>
                   </div>
 

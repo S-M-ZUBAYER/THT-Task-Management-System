@@ -119,36 +119,38 @@ const DiscussionList = ({ discussions }) => {
               </div>
 
               {/*Add Attachment*/}
-              <div className="flex items-center gap-2.5">
-                <label
-                  className="text-sm bg-stone-200 hover:bg-stone-300 cursor-pointer px-3 py-1 inline-block rounded"
-                  htmlFor={`fileUpload-${discussion.id}-file`}
-                >
-                  Upload File
-                  <input
-                    type="file"
-                    id={`fileUpload-${discussion.id}-file`}
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => handleFileChange(discussion.id, e)}
-                  />
-                </label>
-                <label
-                  className="text-sm bg-stone-200 hover:bg-stone-300 cursor-pointer px-3 py-1 inline-block rounded"
-                  htmlFor={`fileUpload-${discussion.id}-image`}
-                >
-                  Upload Image
-                  <input
-                    type="file"
-                    id={`fileUpload-${discussion.id}-image`}
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => handleImageChange(discussion.id, e)}
-                  />
-                </label>
-              </div>
+              {admin && (
+                <div className="flex items-center gap-2.5">
+                  <label
+                    className="text-sm bg-stone-200 hover:bg-stone-300 cursor-pointer px-3 py-1 inline-block rounded"
+                    htmlFor={`fileUpload-${discussion.id}-file`}
+                  >
+                    Upload File
+                    <input
+                      type="file"
+                      id={`fileUpload-${discussion.id}-file`}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleFileChange(discussion.id, e)}
+                    />
+                  </label>
+                  <label
+                    className="text-sm bg-stone-200 hover:bg-stone-300 cursor-pointer px-3 py-1 inline-block rounded"
+                    htmlFor={`fileUpload-${discussion.id}-image`}
+                  >
+                    Upload Image
+                    <input
+                      type="file"
+                      id={`fileUpload-${discussion.id}-image`}
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleImageChange(discussion.id, e)}
+                    />
+                  </label>
+                </div>
+              )}
 
               {/* Attachments */}
               {Array.isArray(discussion.attachments) &&

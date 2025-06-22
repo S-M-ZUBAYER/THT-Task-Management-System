@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import BugCard from "@/components/BugCard";
 import { axiosApi } from "@/lib/axiosApi";
-import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
+import CustomPagination from "@/components/Pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 const BugManagement = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [bugsList, setBugsList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,9 +17,17 @@ const BugManagement = () => {
         const response = await axiosApi.get(
           "https://grozziie.zjweiting.com:57683/tht/taskManagement/api/projectBug/with-bugs/getAll"
         );
-        setBugsList(response?.data?.result || []);
+        const data = response?.data?.result.sort((a, b) => {
+          return new Date(b.id) - new Date(a.id);
+        });
+        if (!data || data.length === 0) {
+          console.warn("No bugs found in the response.");
+          setBugsList([]);
+          return;
+        }
+        setBugsList(data);
+        console.log("Fetched bugs:", data);
       } catch (error) {
-        toast.error("Failed to fetch bugs");
         console.error("Error fetching bugs:", error);
       } finally {
         setLoading(false);
@@ -26,11 +37,30 @@ const BugManagement = () => {
     fetchBugs();
   }, []);
 
+  const totalPages = Math.ceil(bugsList.length / ITEMS_PER_PAGE);
+
+  const paginatedBugs = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return bugsList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, bugsList]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  useEffect(() => {
+    console.log("Updated bugsList", bugsList);
+  }, [bugsList]);
+
+  useEffect(() => {
+    console.log("Updated paginatedBugs", paginatedBugs);
+  }, [paginatedBugs]);
+
   return (
     <section className="w-[75vw] max-w-[80vw] px-6 py-8 mx-auto">
-      <h1 className="text-[28px] font-semibold leading-[150%] text-[#004368] font-poppins mb-6">
-        Bugs & Solutions
-      </h1>
+      <h2 className="font-semibold text-lg text-[#004368]">Bugs & solution</h2>
 
       {loading ? (
         <div className="w-[75vw] h-[67vh] flex justify-center items-center ">
@@ -39,11 +69,20 @@ const BugManagement = () => {
       ) : bugsList.length === 0 ? (
         <p className="text-gray-500 text-sm">No bugs found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto">
-          {bugsList.map((bugData, index) => (
-            <BugCard key={index} {...bugData} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-6">
+            {paginatedBugs.map((bug, index) => (
+              <BugCard key={index} {...bug} />
+            ))}
+          </div>
+          <div className="flex justify-end mt-6">
+            <CustomPagination
+              currentPage={currentPage}
+              handlePageChange={handlePageChange}
+              totalPages={totalPages}
+            />
+          </div>
+        </>
       )}
     </section>
   );

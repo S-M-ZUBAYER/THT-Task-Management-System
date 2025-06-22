@@ -18,6 +18,8 @@ import SingleTaskPage from "./pages/SingleTaskPage";
 import TaskReport from "./pages/TaskReport";
 import BugDetailsPage from "./pages/BugDetailsPage";
 import SignInPage from "./pages/SignInPage";
+import Animated404 from "./components/404";
+import ReportsPage from "./pages/ReportsPage";
 
 const AppLayout = () => {
   return (
@@ -67,10 +69,14 @@ const App = () => {
           <Route path="employees" element={<EmployeePage />} />
           <Route path="tasks" element={<TaskPage />} />
           <Route path="bugs" element={<BugManagement />} />
-          <Route path="task-details" element={<SingleTaskPage />} />
+          <Route path="task-details/:id" element={<SingleTaskPage />} />
           <Route path="task-report" element={<TaskReport />} />
-          <Route path="bug-details" element={<BugDetailsPage />} />
-          <Route path="*" element={<div>404 Not Found</div>} />
+          <Route
+            path="bug-details/:id/:bugProjectName"
+            element={<BugDetailsPage />}
+          />
+          <Route path="Reports/:email/:name" element={<ReportsPage />} />
+          <Route path="*" element={<Animated404 />} />
         </Route>
 
         <Route

@@ -4,12 +4,21 @@ import UploadedView from "./UploadedView";
 import { axiosApi } from "@/lib/axiosApi";
 import useTaskData from "@/hook/useTaskData";
 import toast from "react-hot-toast";
-
+import { useWebSocket } from "@/hook/useWebSocket";
+import { format } from "date-fns";
+import { useUserData } from "@/hook/useUserData";
+import { useTaskStore } from "../../Zustand/useTaskStore";
+import useTaskColumns from "@/hook/useTasksData";
 export default function DocumentUploader({ title }) {
   const [uploadState, setUploadState] = useState("idle");
   const [files, setFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const { id, fetchTaskById } = useTaskData();
+  const { sendMessage } = useWebSocket();
+  const { user } = useUserData();
+  const { task } = useTaskStore();
+  const { taskInfo } = task;
+  const { fetchTasks } = useTaskColumns();
 
   const handleFile = (selectedFiles) => {
     setFiles((prev) => [...prev, ...selectedFiles]);
@@ -67,10 +76,25 @@ export default function DocumentUploader({ title }) {
       await axiosApi.post(endpoint, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      try {
+        sendMessage({
+          type: "notify_specific",
+          userIds: taskInfo.assigned_employee_ids.map((emp) => String(emp.id)),
+          message: `${
+            isResource ? "New resource uploaded" : "New test report uploaded"
+          }`,
+          name: user.name.trim(),
+          date: format(new Date(), "MM-dd-yyyy"),
+          path: `/task-details/${id}`,
+        });
+      } catch (error) {
+        console.error("Error sending notification:", error);
+        toast.error("Failed to send notification.");
+      }
       setFiles([]);
       setUploadState("idle");
       await fetchTaskById();
+      fetchTasks();
       toast.success("Files uploaded successfully.");
     } catch (error) {
       console.error("Upload failed:", error);

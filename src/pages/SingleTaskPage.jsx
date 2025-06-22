@@ -58,7 +58,10 @@ const SingleTaskPage = () => {
             </div>
           </div>
           <AssignedUsers assign={taskInfo.assigned_employee_ids} />
-          <TaskStatus current={taskInfo.status} />
+          <TaskStatus
+            current={taskInfo.status}
+            assign={taskInfo.assigned_employee_ids}
+          />
           <DiscussionList discussions={discussions} />
         </div>
 

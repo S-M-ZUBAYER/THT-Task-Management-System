@@ -39,12 +39,12 @@ const TaskCard = ({
     <div
       className="bg-white rounded-xl border-2 p-4 space-y-3 border-[#E8D9FF]"
       onClick={() => {
-        navigate("/task-details", { state: { id } });
+        navigate(`/task-details/${id}`);
       }}
     >
       <div className="text-xs text-purple-600 font-bold flex justify-between">
         <p>Project</p>
-        {admin && <TaskMenu id={id} projectName={title} />}
+        {admin && statusIndex === 0 && <TaskMenu id={id} projectName={title} />}
       </div>
       <h3 className="font-semibold">{title}</h3>
       <p className="text-sm text-gray-500">{description}</p>

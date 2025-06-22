@@ -5,10 +5,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import icons from "@/constants/icons";
+import { useEmployeeData } from "@/hook/useEmployeeData";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
+import { UpdateEmployeeDialog } from "./UpdateEmployeeDialog";
+import { useRef } from "react";
 
-function EmployeeDropDown({ employee, fetchData, onEdit }) {
+function EmployeeDropDown({ employee }) {
+  const dialogRef = useRef();
+  const { fetchData } = useEmployeeData();
+
   const handleDelete = async () => {
     try {
       await axiosApi.post("/user/delete", {
@@ -21,6 +27,7 @@ function EmployeeDropDown({ employee, fetchData, onEdit }) {
       toast.error("Failed to delete employee");
     }
   };
+
   const handleMakeAdmin = async () => {
     try {
       await axiosApi.post(`/makeAdmin/${employee.id}`);
@@ -31,54 +38,50 @@ function EmployeeDropDown({ employee, fetchData, onEdit }) {
       toast.error("Failed to make employee admin");
     }
   };
-  const handleEdit = () => {
-    onEdit(employee);
-    console.log("Edit employee:", employee);
-  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        style={{
-          backgroundColor: "transparent",
-          height: "auto",
-          fontWeight: "normal",
-          outline: "none",
-          border: "none",
-          padding: "0",
-        }}
-      >
-        ...
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>
-          <div
-            className="flex items-center text-[#004368] "
-            onClick={handleEdit}
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          style={{
+            backgroundColor: "transparent",
+            height: "auto",
+            fontWeight: "normal",
+            outline: "none",
+            border: "none",
+            padding: "0",
+          }}
+        >
+          ...
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => {
+              dialogRef.current?.open();
+            }}
           >
-            <img src={icons.Edit} alt="Edit" className="w-4 h-4 mr-2" />
-            <p>Edit Employee</p>
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <div
-            className="flex items-center text-[#004368] "
-            onClick={handleMakeAdmin}
-          >
-            <img src={icons.manager} alt="Edit" className="w-4 h-4 mr-2" />
-            <p>Make As Admin</p>
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <div
-            className="flex items-center text-[#004368] "
-            onClick={handleDelete}
-          >
-            <img src={icons.Delete} alt="Edit" className="w-4 h-4 mr-2" />
-            <p>Remove Employee</p>
-          </div>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <div className="flex items-center text-[#004368]">
+              <img src={icons.Edit} alt="Edit" className="w-4 h-4 mr-2" />
+              <p>Edit Employee</p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleMakeAdmin}>
+            <div className="flex items-center text-[#004368]">
+              <img src={icons.manager} alt="Manager" className="w-4 h-4 mr-2" />
+              <p>Make As Admin</p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDelete}>
+            <div className="flex items-center text-[#004368]">
+              <img src={icons.Delete} alt="Delete" className="w-4 h-4 mr-2" />
+              <p>Remove Employee</p>
+            </div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <UpdateEmployeeDialog ref={dialogRef} employee={employee} />
+    </>
   );
 }
 
