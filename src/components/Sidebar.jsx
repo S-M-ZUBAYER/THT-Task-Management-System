@@ -98,7 +98,7 @@ const Sidebar = () => {
           style={{
             backgroundColor: "white",
             outline: "none",
-            color: "#BDBDBD",
+            color: "#fb8500",
           }}
           onClick={() => {
             localStorage.removeItem("user");

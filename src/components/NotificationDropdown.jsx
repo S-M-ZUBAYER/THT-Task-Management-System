@@ -10,11 +10,16 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useNavigate } from "react-router-dom";
+import useTaskColumns from "@/hook/useTasksData";
+import useTaskData from "@/hook/useTaskData";
+import { useBugData } from "@/hook/useBugData";
 
 const NotificationDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const { fetchTasks } = useTaskColumns();
+  const { fetchTaskById } = useTaskData();
+  const { fetchBugsById } = useBugData();
   const { unreadCount, messages, markAsRead, seenMessageIds } =
     useNotificationStore();
 
@@ -23,6 +28,12 @@ const NotificationDrawer = () => {
   const handleNavigation = (path, id) => {
     markAsRead(id);
     setIsOpen(false);
+    if (path.includes("task")) {
+      fetchTasks();
+      fetchTaskById();
+    } else if (path.includes("bug")) {
+      fetchBugsById();
+    }
     navigate(path);
   };
 

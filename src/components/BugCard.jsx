@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 const BugCard = ({ bugs, bugProjectName, id }) => {
   const navigate = useNavigate();
-  console.log(bugs, bugProjectName, id);
   const handleBugClick = () => {
     navigate(`/bug-details/${id}/${bugProjectName}`);
   };

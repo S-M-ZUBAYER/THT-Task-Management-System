@@ -10,7 +10,7 @@ export default function TaskCard({ employeeName, reportDetails, image }) {
         <span>{employeeName}</span>
       </div>
       <ul className="text-sm list-decimal pl-5">
-        <p className="break-words whitespace-pre-line max-w-full">
+        <p className="break-words whitespace-pre-line max-w-full line-clamp-4">
           {reportDetails}
         </p>
       </ul>
