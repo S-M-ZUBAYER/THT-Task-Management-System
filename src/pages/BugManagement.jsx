@@ -50,14 +50,6 @@ const BugManagement = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Updated bugsList", bugsList);
-  }, [bugsList]);
-
-  useEffect(() => {
-    console.log("Updated paginatedBugs", paginatedBugs);
-  }, [paginatedBugs]);
-
   return (
     <section className="w-[75vw] max-w-[80vw] px-6 py-8 mx-auto">
       <h2 className="font-semibold text-lg text-[#004368]">Bugs & solution</h2>

@@ -14,16 +14,23 @@ import Loader from "@/components/Loader";
 
 const SingleTaskPage = () => {
   const { task } = useTaskStore();
-  const { id, fetchTaskById } = useTaskData();
+  const { id, fetchTaskById, loading } = useTaskData();
 
   useEffect(() => {
     if (!task && id) fetchTaskById();
   }, [id]);
 
-  if (!task) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen w-[80vw] ">
         <Loader />
+      </div>
+    );
+  }
+  if (!task) {
+    return (
+      <div className="flex items-center justify-center h-screen w-[80vw] ">
+        <p className="text-gray-500">No task found.</p>
       </div>
     );
   }

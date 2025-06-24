@@ -47,7 +47,7 @@ const TaskCard = ({
         {admin && statusIndex === 0 && <TaskMenu id={id} projectName={title} />}
       </div>
       <h3 className="font-semibold">{title}</h3>
-      <p className="text-sm text-gray-500">{description}</p>
+      <p className="text-sm text-gray-500 line-clamp-4">{description}</p>
       <div className={`text-sm font-medium flex items-center gap-1 ${text}`}>
         <Clock Stock={svgColor} />
         <p>

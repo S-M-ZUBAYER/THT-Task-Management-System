@@ -2,9 +2,8 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { gsap } from "gsap";
+import { motion } from "framer-motion";
 import { X, Plus, Edit } from "lucide-react";
-
 import {
   Select,
   SelectTrigger,
@@ -12,7 +11,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Input } from "../ui/input";
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
@@ -23,13 +21,13 @@ import useTaskData from "../../hook/useTaskData";
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
   task_details: z.string().min(3, "Bug details required"),
+  task_starting_time: z.date({ required_error: "Start date is required" }),
+  task_deadline: z.date().nullable().optional(),
   status: z.enum(["To Do", "In Progress", "Completed"]),
   assigned_employee_ids: z.array(z.string()).optional(),
-  task_starting_time: z.union([z.date(), z.string().datetime()]).optional(),
-  task_deadline: z.union([z.date(), z.string().datetime()]).optional(),
 });
 
-const UpdateTask = () => {
+function UpdateTask() {
   const { fetchTasks } = useTaskColumns();
   const { task } = useTaskStore();
   const { taskInfo } = task;
@@ -60,84 +58,75 @@ const UpdateTask = () => {
     fetchSolvers();
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        task_title: taskInfo.task_title,
-        task_details: taskInfo.task_details,
-        task_starting_time: taskInfo.task_starting_time,
-        task_deadline: taskInfo.task_deadline,
-        status: taskInfo.status,
-      });
-    }
-  }, [isOpen]);
-  const form = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       task_title: taskInfo?.task_title || "",
       task_details: taskInfo?.task_details || "",
       task_starting_time: taskInfo?.task_starting_time
         ? new Date(taskInfo.task_starting_time)
-        : undefined,
+        : null,
       task_deadline: taskInfo?.task_deadline
         ? new Date(taskInfo.task_deadline)
-        : undefined,
+        : null,
       status: taskInfo?.status || "To Do",
     },
   });
 
-  const toggleModal = useCallback(() => {
-    if (!isOpen) {
-      setIsOpen(true);
-      requestAnimationFrame(() => {
-        gsap.fromTo(
-          modalRef.current,
-          { opacity: 0, y: 50, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "power2.out" }
-        );
+  useEffect(() => {
+    if (isOpen && taskInfo) {
+      reset({
+        task_title: taskInfo.task_title || "",
+        task_details: taskInfo.task_details || "",
+        task_starting_time: taskInfo.task_starting_time
+          ? new Date(taskInfo.task_starting_time)
+          : null,
+        task_deadline: taskInfo.task_deadline
+          ? new Date(taskInfo.task_deadline)
+          : null,
+        status: taskInfo.status || "To Do",
       });
-    } else {
-      gsap.to(modalRef.current, {
-        opacity: 0,
-        y: 50,
-        scale: 0.95,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: () => setIsOpen(false),
-      });
+      setSolvers(taskInfo?.assigned_employee_ids?.map((u) => u.id) || []);
     }
-  }, [isOpen]);
+  }, [isOpen, taskInfo, reset]);
+
+  const toggleModal = useCallback(() => {
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const startingTime =
-        values.task_starting_time instanceof Date
-          ? values.task_starting_time.toISOString()
-          : values.task_starting_time;
-
-      const deadline =
-        values.task_deadline instanceof Date
-          ? values.task_deadline.toISOString()
-          : values.task_deadline;
-
       const submissionData = {
         ...values,
-        task_starting_time: startingTime,
-        task_deadline: deadline,
+        task_starting_time:
+          values.task_starting_time instanceof Date
+            ? values.task_starting_time.toISOString()
+            : null,
+        task_deadline:
+          values.task_deadline instanceof Date
+            ? values.task_deadline.toISOString()
+            : null,
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
+      console.log("Submission data:", submissionData);
       await axiosApi.post(`/tasks/update/${taskInfo.id}`, submissionData);
-
-      toggleModal();
-      form.reset();
-      setSolvers([]);
       toast.success("Task updated successfully!");
+      toggleModal();
+      reset();
+      setSolvers([]);
       fetchTasks();
       fetchTaskById();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to update task:", error);
       toast.error("Failed to update task. Please try again.");
     } finally {
       setIsLoading(false);
@@ -149,48 +138,54 @@ const UpdateTask = () => {
       <div
         onClick={toggleModal}
         className="flex items-center justify-center text-[#004368] bg-[#E6ECF0] hover:bg-[#D6E6F0] focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
-        aria-label="Add new bug"
+        aria-label="Edit task"
       >
         <Edit className="w-4 h-4" aria-hidden="true" />
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50">
-          <div
+        <motion.div
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 50, scale: 0.95 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-transparent backdrop-blur-sm bg-opacity-50"
+        >
+          <motion.div
             ref={modalRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="bg-white rounded-xl shadow-xl p-6 w-full max-w-xl relative space-y-6"
           >
             <div
               onClick={toggleModal}
-              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors"
+              className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
             </div>
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Project name
                 </label>
-                <Input
-                  {...form.register("task_title")}
-                  style={{
-                    outline: "none",
-                    boxShadow: "none",
-                    color: "#004368",
-                  }}
+                <input
+                  {...register("task_title")}
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500"
                 />
-                {form.formState.errors.task_title && (
+                {errors.task_title && (
                   <p className="text-sm text-red-500">
-                    {form.formState.errors.task_title.message}
+                    {errors.task_title.message}
                   </p>
                 )}
               </div>
 
               <div>
                 <label
-                  htmlFor="details"
+                  htmlFor="task_details"
                   className="block font-medium text-gray-700"
                 >
                   Project Requirements
@@ -198,13 +193,13 @@ const UpdateTask = () => {
                 <textarea
                   id="task_details"
                   rows={4}
-                  {...form.register("task_details")}
+                  {...register("task_details")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="project requirements here..."
+                  placeholder="Project requirements here..."
                 />
-                {form.formState.errors.task_details && (
+                {errors.task_details && (
                   <p className="mt-1 text-sm text-red-600">
-                    {form.formState.errors.task_details.message}
+                    {errors.task_details.message}
                   </p>
                 )}
               </div>
@@ -212,14 +207,14 @@ const UpdateTask = () => {
               <div className="flex gap-4 w-full">
                 <div className="w-1/2">
                   <DatePicker
-                    form={form}
+                    form={{ watch, setValue, formState: { errors } }}
                     name="task_starting_time"
                     label="Start Date"
                   />
                 </div>
                 <div className="w-1/2">
                   <DatePicker
-                    form={form}
+                    form={{ watch, setValue, formState: { errors } }}
                     name="task_deadline"
                     label="End Date"
                   />
@@ -234,9 +229,9 @@ const UpdateTask = () => {
                   Status
                 </label>
                 <Select
-                  value={form.watch("status")}
+                  value={watch("status")}
                   onValueChange={(val) =>
-                    form.setValue("status", val, { shouldValidate: true })
+                    setValue("status", val, { shouldValidate: true })
                   }
                 >
                   <SelectTrigger
@@ -325,7 +320,7 @@ const UpdateTask = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full  text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
+                className="w-full text-white py-2 rounded-md hover:bg-[#003050] transition-colors focus:ring-4 focus:ring-blue-300"
                 style={{ backgroundColor: "#004368" }}
               >
                 {isLoading ? (
@@ -357,11 +352,11 @@ const UpdateTask = () => {
                 )}
               </button>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </>
   );
-};
+}
 
 export default UpdateTask;

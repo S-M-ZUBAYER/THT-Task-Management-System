@@ -77,9 +77,6 @@ export function AddEmployeeDailog() {
       if (data.image) {
         formData.append("image", data.image);
       }
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
       const res = await axiosApi.post("/user/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
