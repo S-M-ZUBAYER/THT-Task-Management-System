@@ -2,9 +2,12 @@ import UserAvatars from "./UserAvatars";
 import StatusDropdown from "./StatusDropdown";
 import icons from "@/constants/icons";
 import { useUserData } from "@/hook/useUserData";
+import { useState } from "react";
+import BugDetailsModal from "./BugDetailsModal";
 
 export default function BugTableRow({ bug }) {
   const { user } = useUserData();
+  const [open, setOpen] = useState(false);
   const {
     BugDetails = "",
     findDate,
@@ -16,8 +19,48 @@ export default function BugTableRow({ bug }) {
     id,
   } = bug;
   const authorized = assignWith.some((item) => item.id === user.id);
+
+  const handleDownload = async () => {
+    const fileUrl = attachmentFile;
+    const fileName = fileUrl.split("/").pop() || "attachment";
+    const fileExtension = fileName.split(".").pop()?.toLowerCase();
+
+    const imageExtensions = ["jpg", "jpeg", "png", "webp", "gif"];
+
+    if (fileExtension && imageExtensions.includes(fileExtension)) {
+      window.open(fileUrl, "_blank");
+    } else {
+      try {
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error("Failed to download file:", error);
+      }
+    }
+  };
+
+  const handleRowClick = () => {
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
   return (
-    <tr className="border-b hover:bg-muted transition-colors">
+    <tr
+      className="border-b hover:bg-muted transition-colors"
+      onClick={handleRowClick}
+    >
       <td className="px-4 py-3 max-w-xs truncate" title={BugDetails}>
         {BugDetails}
       </td>
@@ -41,13 +84,12 @@ export default function BugTableRow({ bug }) {
           <span className="truncate max-w-[100px]" title="Bug report">
             Bug report
           </span>
-          <a
-            href={attachmentFile}
-            download={attachmentFile.split("/").pop() || "attachment"}
-            aria-label="Download attachment"
+          <div
+            onClick={handleDownload}
+            aria-label="Download or view attachment"
           >
             <img src={icons.Download} alt="Download icon" className="w-5 h-5" />
-          </a>
+          </div>
         </div>
       </td>
 
@@ -58,6 +100,7 @@ export default function BugTableRow({ bug }) {
           <span className="text-muted-foreground">{status}</span>
         )}
       </td>
+      <BugDetailsModal isOpen={open} onClose={handleCloseModal} bug={bug} />
     </tr>
   );
 }
