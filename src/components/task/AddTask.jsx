@@ -84,7 +84,6 @@ const AddTask = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      console.log("Submitting task with values:", values);
       const submissionData = {
         ...values,
         task_starting_time: values.task_starting_time.toISOString(),
@@ -94,7 +93,6 @@ const AddTask = () => {
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
-      console.log("Submission data:", submissionData);
       const res = await axiosApi.post("/tasks/Create", submissionData);
       toast.success("Task created successfully!");
       try {

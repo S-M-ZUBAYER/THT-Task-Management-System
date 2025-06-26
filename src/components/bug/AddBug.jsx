@@ -122,8 +122,6 @@ const AddBug = () => {
   }, [isOpen]);
 
   const onSubmit = async (values) => {
-    console.log("data intial");
-
     try {
       setIsLoading(true);
       if (!projectName || !id || !user.email) {
@@ -142,11 +140,6 @@ const AddBug = () => {
       formData.append("createdEmail", user.email);
       formData.append("remark", "Not Checked");
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
-      console.log("data");
-
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
 
       const res = await axiosApi.post("/bug/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },

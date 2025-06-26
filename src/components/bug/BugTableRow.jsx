@@ -9,7 +9,7 @@ export default function BugTableRow({ bug }) {
   const { user } = useUserData();
   const [open, setOpen] = useState(false);
   const {
-    BugDetails = "",
+    BugTitle = "",
     findDate,
     solveDate,
     assignWith = [],
@@ -20,7 +20,8 @@ export default function BugTableRow({ bug }) {
   } = bug;
   const authorized = assignWith.some((item) => item.id === user.id);
 
-  const handleDownload = async () => {
+  const handleDownload = async (e) => {
+    e.stopPropagation();
     const fileUrl = attachmentFile;
     const fileName = fileUrl.split("/").pop() || "attachment";
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
@@ -61,8 +62,8 @@ export default function BugTableRow({ bug }) {
       className="border-b hover:bg-muted transition-colors"
       onClick={handleRowClick}
     >
-      <td className="px-4 py-3 max-w-xs truncate" title={BugDetails}>
-        {BugDetails}
+      <td className="px-4 py-3 max-w-xs truncate" title={BugTitle}>
+        {BugTitle}
       </td>
 
       <td className="px-4 py-3 whitespace-nowrap">
@@ -85,7 +86,7 @@ export default function BugTableRow({ bug }) {
             Bug report
           </span>
           <div
-            onClick={handleDownload}
+            onClick={(e) => handleDownload(e)}
             aria-label="Download or view attachment"
           >
             <img src={icons.Download} alt="Download icon" className="w-5 h-5" />
@@ -95,7 +96,7 @@ export default function BugTableRow({ bug }) {
 
       <td className="px-4 py-3">
         {authorized ? (
-          <StatusDropdown current={status} id={id} bugName={BugDetails} />
+          <StatusDropdown current={status} id={id} bugName={BugTitle} />
         ) : (
           <span className="text-muted-foreground">{status}</span>
         )}
