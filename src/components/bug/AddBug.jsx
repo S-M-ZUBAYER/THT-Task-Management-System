@@ -122,6 +122,8 @@ const AddBug = () => {
   }, [isOpen]);
 
   const onSubmit = async (values) => {
+    console.log("data intial");
+
     try {
       setIsLoading(true);
       if (!projectName || !id || !user.email) {
@@ -132,16 +134,15 @@ const AddBug = () => {
       formData.append("projectName", projectName);
       formData.append("BugTitle", values.BugTitle);
       formData.append("BugDetails", values.BugDetails);
-      formData.append("findDate", format(values.findDate, "MM-dd-yyyy"));
+      formData.append("findDate", values.findDate.toISOString().split("T")[0]);
       formData.append("priority", values.priority);
       formData.append("status", "Pending");
-
       formData.append("assignWith", JSON.stringify(solvers));
-
       formData.append("bugProjectId", id);
       formData.append("createdEmail", user.email);
       formData.append("remark", "Not Checked");
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
+      console.log("data");
 
       formData.forEach((value, key) => {
         console.log(`${key}:`, value);
