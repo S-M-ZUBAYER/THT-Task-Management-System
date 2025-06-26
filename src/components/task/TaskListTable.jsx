@@ -3,23 +3,44 @@ import AddTask from "./AddTask";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
+import { useUserData } from "@/hook/useUserData";
+import { useState, useMemo } from "react";
+import CustomPagination from "../Pagination";
 
-export const TaskListTable = ({ taskData, fetchData }) => {
+const ITEMS_PER_PAGE = 10;
+
+export const TaskListTable = ({ taskData, loading }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const { admin } = useUserData();
   const navigate = useNavigate();
+
+  const totalPages = Math.ceil(taskData.length / ITEMS_PER_PAGE);
+
+  const paginatedTasks = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return taskData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, taskData]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   const handleTaskDetails = (taskId) => {
-    navigate("/task-details", { state: { id: taskId } });
+    navigate(`/task-details/${taskId}`);
   };
   return (
     <div className="bg-white rounded-xl border p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
-        <AddTask fetchData={fetchData} />
+        {admin && <AddTask />}
       </div>
       <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">
         <table className="w-full text-sm  text-center">
           <thead className="text-muted-foreground border-b">
             <tr className="text-[#004368]">
-              <th className="p-2">Name</th>
+              <th className="p-2 text-left">Name</th>
               <th>
                 <div className="flex text-[#004368] justify-center items-center gap-1.5">
                   <Calendar className="w-4 h-4 " />
@@ -38,8 +59,8 @@ export const TaskListTable = ({ taskData, fetchData }) => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(taskData) && taskData.length > 0 ? (
-              taskData.map((task) => {
+            {Array.isArray(paginatedTasks) && paginatedTasks.length > 0 ? (
+              paginatedTasks.map((task) => {
                 const { taskInfo } = task;
 
                 return (
@@ -48,7 +69,7 @@ export const TaskListTable = ({ taskData, fetchData }) => {
                     className="border-b cursor-pointer"
                     onClick={() => handleTaskDetails(taskInfo.id)}
                   >
-                    <td className="p-2">{taskInfo.task_title}</td>
+                    <td className="p-2 text-left">{taskInfo.task_title}</td>
 
                     <td className="p-2">
                       {format(
@@ -90,12 +111,23 @@ export const TaskListTable = ({ taskData, fetchData }) => {
             ) : (
               <tr>
                 <td colSpan={6} className="text-center p-4 text-gray-500">
-                  <Loader />
+                  {loading ? (
+                    <Loader />
+                  ) : (
+                    "No tasks available. Please add a task."
+                  )}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-end mt-4 space-x-2 text-sm text-gray-500">
+        <CustomPagination
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          totalPages={totalPages}
+        />
       </div>
     </div>
   );

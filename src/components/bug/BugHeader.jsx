@@ -6,7 +6,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AddBug from "./AddBug";
+import { useUserData } from "@/hook/useUserData";
 export default function BugHeader() {
+  const { admin } = useUserData();
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-[#B0C5D0] pb-4">
       <h2 className="text-xl font-semibold text-[#004368] ">Bug Reports</h2>
@@ -28,7 +30,7 @@ export default function BugHeader() {
             <SelectItem value="Three Week">3 Week</SelectItem>
           </SelectContent>
         </Select>
-        <AddBug />
+        {admin && <AddBug />}
       </div>
     </div>
   );

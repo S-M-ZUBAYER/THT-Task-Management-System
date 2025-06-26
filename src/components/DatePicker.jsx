@@ -26,7 +26,7 @@ function DatePicker({ form, label, name = "date" }) {
               "w-full mt-1 p-2 border border-[#B0C5D0] rounded-md flex items-center justify-between text-left focus:ring-2 focus:ring-[#004368] focus:border-[#004368] cursor-pointer"
             )}
           >
-            <span className="text-gray-700">
+            <span className="text-[#004368] ">
               {selectedDate
                 ? format(selectedDate, "dd MMM yyyy")
                 : "Pick a date"}
@@ -41,9 +41,11 @@ function DatePicker({ form, label, name = "date" }) {
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={(value) =>
-              value && form.setValue(name, value, { shouldValidate: true })
-            }
+            onSelect={(value) => {
+              console.log("Selected value:", value, typeof value);
+              console.log(name, "name");
+              value && form.setValue(name, value, { shouldValidate: true });
+            }}
             initialFocus
             className="bg-white rounded-md shadow-lg p-4"
           />

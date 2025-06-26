@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
 import useTaskData from "@/hook/useTaskData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { useUserData } from "@/hook/useUserData";
+import { format } from "date-fns";
 
 const schema = z.object({
   title: z.string().min(3, "Title required"),
@@ -16,20 +19,6 @@ const schema = z.object({
   discussion_date: z.date({ required_error: "Date is required" }),
   discussion_with_ids: z.array(z.string()).optional(),
 });
-
-const FileInput = ({ label, icon, onChange, accept }) => (
-  <label className="flex items-center gap-2 border border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
-    <img src={icon} alt={`${label} icon`} className="w-5 h-5" />
-    <span className="text-sm text-gray-700">{label}</span>
-    <input
-      type="file"
-      accept={accept}
-      onChange={onChange}
-      className="hidden"
-      aria-label={label}
-    />
-  </label>
-);
 
 const AddDiscuss = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +28,8 @@ const AddDiscuss = () => {
   const [solversData, setSolversData] = useState([]);
   const modalRef = useRef(null);
   const { id, fetchTaskById } = useTaskData();
+  const { sendMessage } = useWebSocket();
+  const { user } = useUserData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -108,14 +99,23 @@ const AddDiscuss = () => {
       formData.append("discussion_with_ids", JSON.stringify(solvers));
       formData.append("task_id", id);
 
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
-
       const res = await axiosApi.post("/taskDiscussion/create", formData);
 
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
+        try {
+          sendMessage({
+            type: "notify_specific",
+            userIds: solvers.map(String),
+            message: "New discussion created",
+            name: user.name.trim(),
+            date: format(new Date(), "MM-dd-yyyy"),
+            path: `/task-details/${id}`,
+          });
+        } catch (error) {
+          console.error("Error sending notification:", error);
+          toast.error("Failed to send notification.");
+        }
         toggleModal();
         form.reset();
         setSolvers([]);
@@ -155,7 +155,7 @@ const AddDiscuss = () => {
 
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 text-[0.8vw] "
+              className="space-y-6 text-[0.8vw] font-normal "
             >
               {/* Discussion Title */}
               <div>
@@ -168,7 +168,7 @@ const AddDiscuss = () => {
                 <input
                   id="title"
                   {...form.register("title")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw] "
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Describe the discuss title"
                 />
                 {form.formState.errors.title && (
@@ -190,7 +190,7 @@ const AddDiscuss = () => {
                   id="details"
                   rows={4}
                   {...form.register("details")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-[0.6vw]"
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Describe the discuss Details"
                 />
                 {form.formState.errors.details && (
@@ -268,7 +268,10 @@ const AddDiscuss = () => {
                     <button
                       type="button"
                       onClick={() => setShowSolvers(false)}
-                      className="bg-[#E6ECF0] text-[#004368] hover:text-[#003050] mt-2 text-sm font-medium transition-colors px-3 py-1 rounded-md"
+                      style={{
+                        backgroundColor: "#004368",
+                        color: "white",
+                      }}
                     >
                       Done
                     </button>

@@ -1,16 +1,18 @@
 import { format } from "date-fns";
 import UploaderModal from "./UploaderModal";
+import { useUserData } from "@/hook/useUserData";
 
 const isImageFile = (url) => {
   return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
 };
 
 const ResourceList = ({ title, items }) => {
+  const { admin } = useUserData();
   return (
     <div className="p-4 border rounded-xl space-y-2">
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-semibold text-[#004368] ">{title}</h3>
-        <UploaderModal title={title} />
+        {admin && <UploaderModal title={title} />}
       </div>
 
       {items.map(

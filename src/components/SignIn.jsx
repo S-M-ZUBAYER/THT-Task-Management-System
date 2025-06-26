@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -51,8 +51,8 @@ export default function Signin() {
         throw new Error(data.error || "Login failed");
       }
     } catch (error) {
-      // Use toast to display the error message
-      toast.error(error.message || "Login failed");
+      toast.error("Login failed");
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export default function Signin() {
                     <FormControl>
                       <Input
                         placeholder="email"
-                        className="text-black"
+                        className="text-black autofill-black"
                         {...field}
                       />
                     </FormControl>

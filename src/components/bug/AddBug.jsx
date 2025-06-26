@@ -17,8 +17,11 @@ import toast from "react-hot-toast";
 import { axiosApi } from "@/lib/axiosApi";
 import DatePicker from "../DatePicker";
 import { useBugData } from "@/hook/useBugData";
+import { useWebSocket } from "@/hook/useWebSocket";
+import { format } from "date-fns";
 
 const schema = z.object({
+  BugTitle: z.string().min(3, "Bug name is required"),
   BugDetails: z.string().min(3, "Bug details required"),
   findDate: z.date({ required_error: "Date is required" }),
   priority: z.enum(["Low", "Medium", "High"]),
@@ -60,6 +63,7 @@ const AddBug = () => {
   const modalRef = useRef(null);
   const { id, projectName, fetchBugsById } = useBugData();
   const user = JSON.parse(localStorage.getItem("user"));
+  const { sendMessage } = useWebSocket();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -86,6 +90,7 @@ const AddBug = () => {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
+      BugTitle: "",
       BugDetails: "",
       findDate: new Date(),
       priority: "Medium",
@@ -117,30 +122,28 @@ const AddBug = () => {
   }, [isOpen]);
 
   const onSubmit = async (values) => {
+    console.log("data intial");
+
     try {
       setIsLoading(true);
-      console.log(projectName, id, user.email);
       if (!projectName || !id || !user.email) {
         throw new Error("Bug store data is incomplete");
-      }
-      if (Array.isArray(solvers)) {
-        console.log("solvers is an array");
-      } else {
-        console.log("solvers is NOT an array");
       }
 
       const formData = new FormData();
       formData.append("projectName", projectName);
+      formData.append("BugTitle", values.BugTitle);
       formData.append("BugDetails", values.BugDetails);
-      formData.append("findDate", new Date(values.findDate).toISOString());
+      formData.append("findDate", values.findDate.toISOString().split("T")[0]);
       formData.append("priority", values.priority);
       formData.append("status", "Pending");
-      solvers.forEach((solver) => {
-        formData.append("assignWith", solver);
-      });
+      formData.append("assignWith", JSON.stringify(solvers));
       formData.append("bugProjectId", id);
       formData.append("createdEmail", user.email);
+      formData.append("remark", "Not Checked");
       if (fileAttachment) formData.append("attachmentFile", fileAttachment);
+      console.log("data");
+
       formData.forEach((value, key) => {
         console.log(`${key}:`, value);
       });
@@ -148,10 +151,22 @@ const AddBug = () => {
       const res = await axiosApi.post("/bug/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log(res.data);
 
       if (res.status === 201) {
         toast.success("Bug reported successfully!");
+        try {
+          const bugMessage = `<strong>Bug Status:</strong><p>New bug waiting for you</p>`;
+          sendMessage({
+            type: "notify_specific",
+            userIds: solvers.map(String),
+            message: bugMessage,
+            name: user.name.trim(),
+            date: format(new Date(), "MM-dd-yyyy"),
+            path: `/bug-details/${id}/${projectName}`,
+          });
+        } catch (error) {
+          console.error("Error sending WebSocket message:", error);
+        }
         toggleModal();
         form.reset();
         setSolvers([]);
@@ -191,6 +206,27 @@ const AddBug = () => {
             </div>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Bug Name */}
+              <div>
+                <label
+                  htmlFor="details"
+                  className="block font-medium text-gray-700"
+                >
+                  Bug Title
+                </label>
+                <input
+                  id="title"
+                  {...form.register("BugTitle")}
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-gray-700 focus:border-blue-500 focus:ring-blue-500  autofill-black"
+                  placeholder="Describe the discuss BugTitle..."
+                />
+                {form.formState.errors.BugTitle && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {form.formState.errors.BugTitle.message}
+                  </p>
+                )}
+              </div>
+
               {/* Bug Details */}
               <div>
                 <label
@@ -323,7 +359,7 @@ const AddBug = () => {
                 <h4 className="font-medium text-gray-700">Bug Attachments</h4>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <FileInput
-                    label="Discussion files"
+                    label="Bug files"
                     icon={icons.FilePin}
                     onChange={(e) => setFileAttachment(e.target.files[0])}
                     accept="application/pdf,text/plain"

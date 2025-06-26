@@ -14,16 +14,23 @@ import Loader from "@/components/Loader";
 
 const SingleTaskPage = () => {
   const { task } = useTaskStore();
-  const { id, fetchTaskById } = useTaskData();
+  const { id, fetchTaskById, loading } = useTaskData();
 
   useEffect(() => {
     if (!task && id) fetchTaskById();
   }, [id]);
 
-  if (!task) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen w-[80vw] ">
         <Loader />
+      </div>
+    );
+  }
+  if (!task) {
+    return (
+      <div className="flex items-center justify-center h-screen w-[80vw] ">
+        <p className="text-gray-500">No task found.</p>
       </div>
     );
   }
@@ -49,13 +56,19 @@ const SingleTaskPage = () => {
               <div className="flex items-center gap-2">
                 <Clock Stock="#FF0000" />
                 <p className="text-[#FF0000]">
-                  Deadline: {format(taskInfo.task_deadline, "MMMM d, yyyy")}
+                  Deadline:{" "}
+                  {taskInfo.task_deadline !== null
+                    ? format(taskInfo.task_deadline, "MMMM d, yyyy")
+                    : "Not started yet"}
                 </p>
               </div>
             </div>
           </div>
           <AssignedUsers assign={taskInfo.assigned_employee_ids} />
-          <TaskStatus current={taskInfo.status} />
+          <TaskStatus
+            current={taskInfo.status}
+            assign={taskInfo.assigned_employee_ids}
+          />
           <DiscussionList discussions={discussions} />
         </div>
 

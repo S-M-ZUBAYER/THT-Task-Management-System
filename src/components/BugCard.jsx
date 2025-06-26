@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 const BugCard = ({ bugs, bugProjectName, id }) => {
   const navigate = useNavigate();
   const handleBugClick = () => {
-    navigate("/bug-details", {
-      state: { id, bugProjectName },
-    });
+    navigate(`/bug-details/${id}/${bugProjectName}`);
   };
   return (
     <div
@@ -20,7 +18,9 @@ const BugCard = ({ bugs, bugProjectName, id }) => {
             <p className="text-sm text-[#6600FF] font-medium">BUGS</p>
           </div>
         </div>
-        <h2 className="text-lg font-semibold mb-1 mt-6">{bugProjectName} </h2>
+        <h2 className="text-lg font-semibold mb-1 mt-6 break-words whitespace-pre-line max-w-full">
+          {bugProjectName}{" "}
+        </h2>
         {bugs.length > 0 ? (
           <ul className="text-sm text-gray-700 list-decimal list-inside mb-4 line-clamp-4">
             {bugs.map(({ BugDetails }, index) => (
