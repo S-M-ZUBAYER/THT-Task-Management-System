@@ -6,7 +6,8 @@ import icons from "@/constants/icons";
 
 const links = [
   { label: "Dashboard", icon: icons.Dashboard, path: "/" },
-  { label: "Tasks", icon: icons.Task, path: "/tasks" },
+  { label: "Projects", icon: icons.Project, path: "/all-project" },
+  { label: "Tasks", icon: icons.Task, path: "/all-task" },
   { label: "Task Report", icon: icons.TaskReport, path: "/task-report" },
   { label: "Bug management", icon: icons.Bug, path: "/bugs" },
   { label: "Employees", icon: icons.Employees, path: "/employees" },

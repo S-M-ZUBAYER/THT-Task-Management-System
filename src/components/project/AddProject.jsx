@@ -21,6 +21,12 @@ import { useWebSocket } from "@/hook/useWebSocket";
 import { useUserData } from "@/hook/useUserData";
 import { format } from "date-fns";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
   task_details: z.string().min(3, "Bug details required"),
@@ -30,7 +36,7 @@ const schema = z.object({
   assigned_employee_ids: z.array(z.string()).optional(),
 });
 
-const AddTask = () => {
+const AddProject = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSolvers, setShowSolvers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,10 +131,23 @@ const AddTask = () => {
     <>
       <div
         onClick={toggleModal}
-        className="flex items-center justify-center text-[#004368] bg-[#E6ECF0] hover:bg-[#D6E6F0] focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
+        className="flex items-center justify-center text-[#004368]  focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
         aria-label="Add new bug"
       >
-        <Plus className="w-4 h-4" aria-hidden="true" />
+        <Tooltip>
+          <TooltipTrigger
+            style={{
+              backgroundColor: "#E6ECF0",
+              borderRadius: "50%",
+              padding: "0.8em 0.9em",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add New Project</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {isOpen && (
@@ -162,6 +181,7 @@ const AddTask = () => {
                 <input
                   {...register("task_title")}
                   className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none autofill-black"
+                  placeholder="Input Project Name Here"
                 />
                 {errors.task_title && (
                   <p className="text-sm text-red-500">
@@ -330,4 +350,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default AddProject;

@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import TaskMenu from "./TaskMenu";
 
-const BugCard = ({ bugs, bugProjectName, id }) => {
+const Card = ({ bugs, bugProjectName, id, show }) => {
   const navigate = useNavigate();
   const handleBugClick = () => {
     navigate(`/bug-details/${id}/${bugProjectName}`);
@@ -15,8 +16,9 @@ const BugCard = ({ bugs, bugProjectName, id }) => {
         <div className=" flex justify-between items-center">
           <div className="flex items-center justify-center gap-2">
             <div className="w-3 h-3 bg-[#E8D9FF] rounded-full"></div>
-            <p className="text-sm text-[#6600FF] font-medium">BUGS</p>
+            <p className="text-sm text-[#6600FF] font-medium">BUGS </p>
           </div>
+          <div>{show && <TaskMenu />}</div>
         </div>
         <h2 className="text-lg font-semibold mb-1 mt-6 break-words whitespace-pre-line max-w-full">
           {bugProjectName}{" "}
@@ -35,4 +37,4 @@ const BugCard = ({ bugs, bugProjectName, id }) => {
   );
 };
 
-export default BugCard;
+export default Card;

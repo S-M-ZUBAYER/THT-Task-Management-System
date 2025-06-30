@@ -1,6 +1,6 @@
 import React from "react";
 import { Clock } from "@/components/svg/svg";
-import TaskMenu from "./TaskMenu";
+import TaskMenu from "../TaskMenu";
 import { useNavigate } from "react-router-dom";
 import { useUserData } from "@/hook/useUserData";
 

@@ -6,7 +6,7 @@ import CustomPagination from "@/components/Pagination";
 
 const ITEMS_PER_PAGE = 12;
 
-const BugManagement = () => {
+const AllTask = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bugsList, setBugsList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,8 +51,6 @@ const BugManagement = () => {
 
   return (
     <section className="w-[75vw] max-w-[80vw] px-6 py-8 mx-auto">
-      <h2 className="font-semibold text-lg text-[#004368]">Bugs & solution</h2>
-
       {loading ? (
         <div className="w-[75vw] h-[67vh] flex justify-center items-center ">
           <Loader />
@@ -63,7 +61,7 @@ const BugManagement = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-6">
             {paginatedBugs.map((bug, index) => (
-              <Card key={index} {...bug} />
+              <Card key={index} {...bug} show={true} />
             ))}
           </div>
           <div className="flex justify-end mt-6">
@@ -79,4 +77,4 @@ const BugManagement = () => {
   );
 };
 
-export default BugManagement;
+export default AllTask;
