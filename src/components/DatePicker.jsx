@@ -42,8 +42,6 @@ function DatePicker({ form, label, name = "date" }) {
             mode="single"
             selected={selectedDate}
             onSelect={(value) => {
-              console.log("Selected value:", value, typeof value);
-              console.log(name, "name");
               value && form.setValue(name, value, { shouldValidate: true });
             }}
             initialFocus

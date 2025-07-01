@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { X, Plus } from "lucide-react";
+import icons from "@/constants/icons";
 
 import {
   Select,
@@ -16,7 +17,6 @@ import {
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
-import useTaskColumns from "@/hook/useTasksData";
 import { useWebSocket } from "@/hook/useWebSocket";
 import { useUserData } from "@/hook/useUserData";
 import { format } from "date-fns";
@@ -28,13 +28,27 @@ import {
 } from "@/components/ui/tooltip";
 
 const schema = z.object({
-  task_title: z.string().min(3, "Task title is required"),
-  task_details: z.string().min(3, "Bug details required"),
-  task_starting_time: z.date({ required_error: "Date is required" }),
-  task_deadline: z.date().optional().nullable(),
-  status: z.enum(["To Do", "In Progress", "Completed"]),
-  assigned_employee_ids: z.array(z.string()).optional(),
+  project_name: z.string().min(3, "Task title is required"),
+  project_requirements: z.string().min(3, "Bug details required"),
+  project_startDate: z.date({ required_error: "Date is required" }),
+  project_endDate: z.date({ required_error: "Date is required" }),
+  project_status: z.enum(["To Do", "In Progress", "Completed"]),
+  assign_with_ids: z.array(z.string()).optional(),
 });
+
+const FileInput = ({ label, icon, onChange, accept }) => (
+  <label className="flex items-center gap-2 border border-gray-300 rounded-md p-2 cursor-pointer hover:bg-gray-50 transition-colors">
+    <img src={icon} alt={`${label} icon`} className="w-5 h-5" />
+    <span className="text-sm text-gray-700">{label}</span>
+    <input
+      type="file"
+      accept={accept}
+      onChange={onChange}
+      className="hidden"
+      aria-label={label}
+    />
+  </label>
+);
 
 const AddProject = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,8 +56,8 @@ const AddProject = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [solvers, setSolvers] = useState([]);
   const [solversData, setSolversData] = useState([]);
+  const [fileAttachment, setFileAttachment] = useState(null);
   const modalRef = useRef(null);
-  const { fetchTasks } = useTaskColumns();
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
 
@@ -74,12 +88,12 @@ const AddProject = () => {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      task_title: "",
-      task_details: "",
-      task_starting_time: new Date(),
-      task_deadline: null,
-      status: "To Do",
-      assigned_employee_ids: [],
+      project_name: "",
+      project_requirements: "",
+      project_startDate: new Date(),
+      project_endDate: null,
+      project_status: "To Do",
+      assign_with_ids: [],
     },
   });
 
@@ -90,16 +104,25 @@ const AddProject = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const submissionData = {
-        ...values,
-        task_starting_time: values.task_starting_time.toISOString(),
-        task_deadline: values.task_deadline
-          ? values.task_deadline.toISOString()
-          : null,
-        task_completing_date: null,
-        assigned_employee_ids: solvers,
-      };
-      const res = await axiosApi.post("/tasks/Create", submissionData);
+      const formData = new FormData();
+
+      formData.append("project_name", values.project_name);
+      formData.append("project_requirements", values.project_requirements);
+      formData.append(
+        "project_startDate",
+        values.project_startDate.toISOString()
+      );
+      formData.append("project_endDate", values.project_endDate.toISOString());
+      formData.append("project_status", values.project_status);
+      formData.append("assign_with_ids", JSON.stringify(solvers));
+      if (fileAttachment) formData.append("resource_files", fileAttachment);
+
+      formData.forEach((val, index) => {
+        console.log(index, val);
+      });
+
+      const res = await axiosApi.post("/projects/create", formData);
+      console.log(res);
       toast.success("Task created successfully!");
       try {
         const taskMessage = `<strong>Task Status:</strong><p>New Task waiting for you</p>`;
@@ -118,10 +141,9 @@ const AddProject = () => {
       toggleModal();
       reset();
       setSolvers([]);
-      fetchTasks();
     } catch (error) {
-      console.error("Failed to create task:", error);
-      toast.error("Failed to create task. Please try again.");
+      console.error("Failed to create project:", error);
+      toast.error("Failed to create project. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -179,34 +201,34 @@ const AddProject = () => {
                   Project name
                 </label>
                 <input
-                  {...register("task_title")}
+                  {...register("project_name")}
                   className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none autofill-black"
                   placeholder="Input Project Name Here"
                 />
-                {errors.task_title && (
+                {errors.project_name && (
                   <p className="text-sm text-red-500">
-                    {errors.task_title.message}
+                    {errors.project_name.message}
                   </p>
                 )}
               </div>
 
               <div>
                 <label
-                  htmlFor="task_details"
+                  htmlFor="project_requirements"
                   className="block font-medium text-gray-700"
                 >
                   Project Requirements
                 </label>
                 <textarea
-                  id="task_details"
+                  id="project_requirements"
                   rows={4}
-                  {...register("task_details")}
+                  {...register("project_requirements")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md"
                   placeholder="Project requirements here..."
                 />
-                {errors.task_details && (
+                {errors.project_requirements && (
                   <p className="mt-1 text-sm text-red-600">
-                    {errors.task_details.message}
+                    {errors.project_requirements.message}
                   </p>
                 )}
               </div>
@@ -215,14 +237,14 @@ const AddProject = () => {
                 <div className="w-1/2">
                   <DatePicker
                     form={{ watch, setValue, formState: { errors } }}
-                    name="task_starting_time"
+                    name="project_startDate"
                     label="Start Date"
                   />
                 </div>
                 <div className="w-1/2">
                   <DatePicker
                     form={{ watch, setValue, formState: { errors } }}
-                    name="task_deadline"
+                    name="project_endDate"
                     label="End Date"
                   />
                 </div>
@@ -230,15 +252,15 @@ const AddProject = () => {
 
               <div>
                 <label
-                  htmlFor="status"
+                  htmlFor="project_status"
                   className="block font-medium text-gray-700"
                 >
                   Status
                 </label>
                 <Select
-                  value={watch("status")}
+                  value={watch("project_status")}
                   onValueChange={(val) =>
-                    setValue("status", val, { shouldValidate: true })
+                    setValue("project_status", val, { shouldValidate: true })
                   }
                 >
                   <SelectTrigger
@@ -330,6 +352,24 @@ const AddProject = () => {
                     >
                       Done
                     </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Attachments */}
+              <div>
+                <h4 className="font-medium text-gray-700">Resources</h4>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <FileInput
+                    label="Attach resource"
+                    icon={icons.FilePin}
+                    onChange={(e) => setFileAttachment(e.target.files[0])}
+                    accept="application/pdf,text/plain"
+                  />
+                </div>
+                {fileAttachment && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    <p>Attached file: {fileAttachment.name}</p>
                   </div>
                 )}
               </div>

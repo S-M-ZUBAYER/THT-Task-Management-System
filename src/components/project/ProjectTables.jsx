@@ -9,17 +9,17 @@ import AddProject from "./AddProject";
 
 const ITEMS_PER_PAGE = 10;
 
-export const ProjectTables = ({ taskData, loading }) => {
+export const ProjectTables = ({ Data, loading }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const { admin } = useUserData();
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(taskData.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(Data.length / ITEMS_PER_PAGE);
 
   const paginatedTasks = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return taskData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [currentPage, taskData]);
+    return Data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, Data]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -27,8 +27,8 @@ export const ProjectTables = ({ taskData, loading }) => {
     }
   };
 
-  const handleTaskDetails = (taskId) => {
-    navigate(`/task-details/${taskId}`);
+  const handleTaskDetails = (projectName) => {
+    navigate(`/tasks/${projectName}`);
   };
   return (
     <div className="bg-white rounded-xl border p-4">
@@ -60,41 +60,43 @@ export const ProjectTables = ({ taskData, loading }) => {
           </thead>
           <tbody>
             {Array.isArray(paginatedTasks) && paginatedTasks.length > 0 ? (
-              paginatedTasks.map((task) => {
-                const { taskInfo } = task;
-
+              paginatedTasks.map((data) => {
+                const { projectInfo } = data;
                 return (
                   <tr
-                    key={taskInfo.id}
+                    key={projectInfo.id}
                     className="border-b cursor-pointer"
-                    onClick={() => handleTaskDetails(taskInfo.id)}
+                    onClick={() => handleTaskDetails(projectInfo.project_name)}
                   >
-                    <td className="p-2 text-left">{taskInfo.task_title}</td>
+                    <td className="p-2 text-left">
+                      {projectInfo.project_name}
+                    </td>
 
                     <td className="p-2">
                       {format(
-                        new Date(taskInfo.task_starting_time),
+                        new Date(projectInfo.project_startDate),
                         "yyyy-MM-dd"
                       )}
                     </td>
 
                     <td className="pl-5">
-                      {format(new Date(taskInfo.task_deadline), "yyyy-MM-dd")}
+                      {format(
+                        new Date(projectInfo.project_endDate),
+                        "yyyy-MM-dd"
+                      )}
                     </td>
 
                     <td className="flex justify-center items-center p-2">
                       <div className="flex">
-                        {Array.isArray(taskInfo.assigned_employee_ids) &&
-                          taskInfo.assigned_employee_ids.map(
-                            ({ image }, idx) => (
-                              <img
-                                key={idx}
-                                src={image}
-                                alt="Employee"
-                                className="w-6 h-6 rounded-full border-2 border-white -ml-1"
-                              />
-                            )
-                          )}
+                        {Array.isArray(projectInfo.assign_with_ids) &&
+                          projectInfo.assign_with_ids.map(({ image }, idx) => (
+                            <img
+                              key={idx}
+                              src={image}
+                              alt="Employee"
+                              className="w-6 h-6 rounded-full border-2 border-white -ml-1"
+                            />
+                          ))}
                       </div>
                     </td>
 
@@ -102,7 +104,7 @@ export const ProjectTables = ({ taskData, loading }) => {
 
                     <td className="p-2">
                       <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                        {taskInfo.status}
+                        {projectInfo.project_status}
                       </span>
                     </td>
                   </tr>

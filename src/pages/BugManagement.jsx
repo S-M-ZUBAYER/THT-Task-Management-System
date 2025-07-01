@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import Card from "@/components/Card";
 import { axiosApi } from "@/lib/axiosApi";
 import Loader from "@/components/Loader";
 import CustomPagination from "@/components/Pagination";
+import BugCard from "@/components/BugCard";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -63,7 +63,7 @@ const BugManagement = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-6">
             {paginatedBugs.map((bug, index) => (
-              <Card key={index} {...bug} />
+              <BugCard key={index} {...bug} />
             ))}
           </div>
           <div className="flex justify-end mt-6">

@@ -88,7 +88,6 @@ const AddDiscuss = () => {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      console.log(values, "id", id, solvers);
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("details", values.details);

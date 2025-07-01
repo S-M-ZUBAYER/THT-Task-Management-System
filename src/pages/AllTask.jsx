@@ -8,24 +8,23 @@ const ITEMS_PER_PAGE = 12;
 
 const AllTask = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [bugsList, setBugsList] = useState([]);
+  const [allTask, setAllTask] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBugs = async () => {
       try {
-        const response = await axiosApi.get(
-          "https://grozziie.zjweiting.com:57683/tht/taskManagement/api/projectBug/with-bugs/getAll"
-        );
+        const response = await axiosApi.get("/ProjectListWithTasks");
         const data = response?.data?.result.sort((a, b) => {
           return new Date(b.id) - new Date(a.id);
         });
+        console.log(data);
         if (!data || data.length === 0) {
           console.warn("No bugs found in the response.");
-          setBugsList([]);
+          setAllTask([]);
           return;
         }
-        setBugsList(data);
+        setAllTask(data);
       } catch (error) {
         console.error("Error fetching bugs:", error);
       } finally {
@@ -36,12 +35,12 @@ const AllTask = () => {
     fetchBugs();
   }, []);
 
-  const totalPages = Math.ceil(bugsList.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(allTask.length / ITEMS_PER_PAGE);
 
   const paginatedBugs = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return bugsList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [currentPage, bugsList]);
+    return allTask.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, allTask]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -55,13 +54,13 @@ const AllTask = () => {
         <div className="w-[75vw] h-[67vh] flex justify-center items-center ">
           <Loader />
         </div>
-      ) : bugsList.length === 0 ? (
+      ) : allTask.length === 0 ? (
         <p className="text-gray-500 text-sm">No bugs found.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-6">
-            {paginatedBugs.map((bug, index) => (
-              <Card key={index} {...bug} show={true} />
+            {paginatedBugs.map((data, index) => (
+              <Card key={index} {...data} />
             ))}
           </div>
           <div className="flex justify-end mt-6">

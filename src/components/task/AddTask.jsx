@@ -157,11 +157,12 @@ const AddTask = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Project name
+                  Task name
                 </label>
                 <input
                   {...register("task_title")}
                   className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none autofill-black"
+                  placeholder="Task Name"
                 />
                 {errors.task_title && (
                   <p className="text-sm text-red-500">
@@ -175,14 +176,14 @@ const AddTask = () => {
                   htmlFor="task_details"
                   className="block font-medium text-gray-700"
                 >
-                  Project Requirements
+                  Task Requirements
                 </label>
                 <textarea
                   id="task_details"
                   rows={4}
                   {...register("task_details")}
                   className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                  placeholder="Project requirements here..."
+                  placeholder="Task requirements here..."
                 />
                 {errors.task_details && (
                   <p className="mt-1 text-sm text-red-600">

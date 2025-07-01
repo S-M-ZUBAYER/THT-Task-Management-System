@@ -71,7 +71,7 @@ const App = () => {
           <Route path="all-project" element={<AllProject />} />
           <Route path="employees" element={<EmployeePage />} />
           <Route path="all-task" element={<AllTask />} />
-          <Route path="tasks" element={<TaskPage />} />
+          <Route path="tasks/:projectName" element={<TaskPage />} />
           <Route path="bugs" element={<BugManagement />} />
           <Route path="task-details/:id" element={<SingleTaskPage />} />
           <Route path="task-report" element={<TaskReport />} />
