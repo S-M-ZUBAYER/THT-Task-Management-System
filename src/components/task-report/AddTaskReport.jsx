@@ -8,6 +8,12 @@ import { useTaskReportData } from "@/hook/useTaskReportData";
 import { useWebSocket } from "@/hook/useWebSocket";
 import { format } from "date-fns";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 export function AddTaskReport() {
   const [isOpen, setIsOpen] = useState(false);
   const [detail, setDetails] = useState("");
@@ -59,9 +65,22 @@ export function AddTaskReport() {
     <>
       <div
         onClick={() => setIsOpen(true)}
-        className="block text-[#004368] bg-[#E6ECF0] hover:bg-[#d8e2ea] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-3 text-center cursor-pointer"
+        className=" text-[#004368]  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm  flex  justify-center items-center cursor-pointer"
       >
-        <Plus className="w-4 h-4" />
+        <Tooltip>
+          <TooltipTrigger
+            style={{
+              backgroundColor: "#E6ECF0",
+              borderRadius: "50%",
+              padding: "0.8em 0.9em",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add Today task reports</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       <AnimatePresence>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import BugCard from "@/components/BugCard";
 import { axiosApi } from "@/lib/axiosApi";
 import Loader from "@/components/Loader";
 import CustomPagination from "@/components/Pagination";
+import BugCard from "@/components/BugCard";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -26,7 +26,6 @@ const BugManagement = () => {
           return;
         }
         setBugsList(data);
-        console.log("Fetched bugs:", data);
       } catch (error) {
         console.error("Error fetching bugs:", error);
       } finally {

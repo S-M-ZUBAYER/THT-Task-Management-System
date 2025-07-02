@@ -2,8 +2,20 @@ import { Calendar, Mail, Phone, User } from "lucide-react";
 import EmployeeDropDown from "./EmployeeDropDown";
 
 function EmployeeCard({ employee, show }) {
+  const isDeactivated = employee.deactivate === 1;
+
   return (
-    <div className="border border-[#f0f0f0] rounded-xl shadow-sm hover:shadow-lg hover:bg-[#F9F5FF] hover:border-[#D0B0FF] transition-all duration-300 ease-in-out hover:scale-105 bg-white w-[25vw] p-8">
+    <div
+      className={`relative border ${
+        isDeactivated ? "bg-amber-100 text-gray-700" : "bg-white"
+      } rounded-xl shadow-sm hover:shadow-lg hover:bg-[#F9F5FF] hover:border-[#D0B0FF] transition-all duration-300 ease-in-out hover:scale-105 w-[25vw] p-8`}
+    >
+      {isDeactivated && (
+        <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded-full">
+          Deactivated
+        </span>
+      )}
+
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
           <img
@@ -20,6 +32,7 @@ function EmployeeCard({ employee, show }) {
           {employee.name}
         </h2>
       </div>
+
       <div className="grid grid-cols-2 py-4 gap-2 text-xs text-[#2B2B2B]">
         <div className="flex items-center gap-2">
           <User

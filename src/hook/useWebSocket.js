@@ -67,6 +67,7 @@ export const useWebSocket = () => {
 
   const sendMessage = (payload) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
+      console.log("Sending message:", payload);
       socketRef.current.send(JSON.stringify(payload));
     } else {
       console.warn("WebSocket is not connected.");

@@ -14,7 +14,7 @@ export const useEmployeeData = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axiosApi.get("/users/getAll");
+      const res = await axiosApi.get("/users/getAllWithDeactivate");
       const data = res.data.result;
       const adminData = data.filter((user) => user.role === "Admin");
       const userData = data.filter((user) => user.role === "User");

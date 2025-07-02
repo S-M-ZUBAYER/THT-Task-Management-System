@@ -20,6 +20,8 @@ import BugDetailsPage from "./pages/BugDetailsPage";
 import SignInPage from "./pages/SignInPage";
 import Animated404 from "./components/404";
 import ReportsPage from "./pages/ReportsPage";
+import AllProject from "./pages/AllProject";
+import AllTask from "./pages/AllTask";
 
 const AppLayout = () => {
   return (
@@ -66,8 +68,10 @@ const App = () => {
           }
         >
           <Route index element={<Home />} />
+          <Route path="all-project" element={<AllProject />} />
           <Route path="employees" element={<EmployeePage />} />
-          <Route path="tasks" element={<TaskPage />} />
+          <Route path="all-task" element={<AllTask />} />
+          <Route path="tasks/:projectName" element={<TaskPage />} />
           <Route path="bugs" element={<BugManagement />} />
           <Route path="task-details/:id" element={<SingleTaskPage />} />
           <Route path="task-report" element={<TaskReport />} />

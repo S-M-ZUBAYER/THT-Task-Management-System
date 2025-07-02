@@ -20,7 +20,7 @@ export const TaskCard = ({ task }) => {
         {task_title || "Untitled Task"}
       </h3>
 
-      <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+      <p className="text-xs text-muted-foreground mb-3 leading-relaxed line-clamp-5">
         {task_details || "No task details provided."}
       </p>
 

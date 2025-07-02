@@ -2,7 +2,6 @@ export const ResourcesPanel = ({ task = [] }) => {
   const allFiles = task
     .flatMap((t) => t?.resourceFiles || [])
     .filter((f) => f?.fileName);
-
   return (
     <div className="border rounded-xl p-4 bg-white">
       <h3 className="text-sm font-semibold mb-2 text-[#1A1A1A]">Resources</h3>
