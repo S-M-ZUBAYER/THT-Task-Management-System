@@ -2,7 +2,7 @@ import { axiosApi } from "@/lib/axiosApi";
 import { useProjectStore } from "@/Zustand/useProjectStore";
 import { useEffect, useState } from "react";
 
-export const useGetAllProject = () => {
+export const useGetAllProjectData = () => {
   const { project, setProject } = useProjectStore();
   const [isLoading, setIsLoading] = useState(false);
 

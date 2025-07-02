@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import TaskMenu from "./TaskMenu";
+import ProjectTaskMenu from "./ProjectTaskMenu";
 
-const Card = ({ tasks, project_name }) => {
+const ProjectTaskCard = ({ tasks, project_name, id }) => {
   const navigate = useNavigate();
   const handleBugClick = () => {
     navigate(`/tasks/${project_name}`);
@@ -16,10 +16,10 @@ const Card = ({ tasks, project_name }) => {
         <div className=" flex justify-between items-center">
           <div className="flex items-center justify-center gap-2">
             <div className="w-3 h-3 bg-[#E8D9FF] rounded-full"></div>
-            <p className="text-sm text-[#6600FF] font-medium">BUGS </p>
+            <p className="text-sm text-[#6600FF] font-medium">PROJECTS </p>
           </div>
           <div>
-            <TaskMenu />
+            <ProjectTaskMenu id={id} />
           </div>
         </div>
         <h2 className="text-lg font-semibold mb-1 mt-6 break-words whitespace-pre-line max-w-full">
@@ -39,4 +39,4 @@ const Card = ({ tasks, project_name }) => {
   );
 };
 
-export default Card;
+export default ProjectTaskCard;

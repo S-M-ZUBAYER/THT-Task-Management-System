@@ -20,6 +20,8 @@ import useTaskColumns from "@/hook/useTasksData";
 import { useWebSocket } from "@/hook/useWebSocket";
 import { useUserData } from "@/hook/useUserData";
 import { format } from "date-fns";
+import { useProjectTaskData } from "../../hook/useProjectTaskData";
+import { useGetAllTaskData } from "@/hook/useGetAllTaskData";
 
 const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
@@ -40,6 +42,8 @@ const AddTask = () => {
   const { fetchTasks } = useTaskColumns();
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
+  const { projectName, getProjectTask } = useProjectTaskData();
+  const { GetAllTaskfetchTasks } = useGetAllTaskData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -86,6 +90,7 @@ const AddTask = () => {
       setIsLoading(true);
       const submissionData = {
         ...values,
+        project_name: projectName,
         task_starting_time: values.task_starting_time.toISOString(),
         task_deadline: values.task_deadline
           ? values.task_deadline.toISOString()
@@ -113,6 +118,8 @@ const AddTask = () => {
       reset();
       setSolvers([]);
       fetchTasks();
+      getProjectTask();
+      GetAllTaskfetchTasks();
     } catch (error) {
       console.error("Failed to create task:", error);
       toast.error("Failed to create task. Please try again.");

@@ -10,6 +10,7 @@ import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
 import { UpdateEmployeeDialog } from "./UpdateEmployeeDialog";
 import { useRef } from "react";
+import { ShieldBan, ShieldPlus } from "lucide-react";
 
 function EmployeeDropDown({ employee }) {
   const dialogRef = useRef();
@@ -36,6 +37,31 @@ function EmployeeDropDown({ employee }) {
     } catch (error) {
       console.error("Error making employee admin:", error);
       toast.error("Failed to make employee admin");
+    }
+  };
+  const handleDisable = async () => {
+    try {
+      console.log("diable");
+      await axiosApi.post(`/users/deactivate/${employee.id}`, {
+        deactivate: 1,
+      });
+      toast.success("Employee Disable successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Error making employee Disable:", error);
+      toast.error("Failed to make employee Disable");
+    }
+  };
+  const handleEnable = async () => {
+    try {
+      await axiosApi.post(`/users/deactivate/${employee.id}`, {
+        deactivate: 0,
+      });
+      toast.success("Employee Enable successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Error making employee Enable:", error);
+      toast.error("Failed to make employee Enable");
     }
   };
 
@@ -77,6 +103,21 @@ function EmployeeDropDown({ employee }) {
               <p>Remove Employee</p>
             </div>
           </DropdownMenuItem>
+          {employee.deactivate === 0 ? (
+            <DropdownMenuItem onClick={handleDisable}>
+              <div className="flex items-center text-[#004368]">
+                <ShieldBan className="w-4 h-4 mr-2" />
+                <p>Disable</p>
+              </div>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={handleEnable}>
+              <div className="flex items-center text-[#004368]">
+                <ShieldPlus className="w-4 h-4 mr-2" />
+                <p>Enable</p>
+              </div>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
