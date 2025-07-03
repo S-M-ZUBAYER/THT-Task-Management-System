@@ -26,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
 
 const schema = z.object({
   project_name: z.string().min(3, "Task title is required"),
@@ -60,6 +61,7 @@ const AddProject = () => {
   const modalRef = useRef(null);
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
+  const { refetch } = useGetAllProjectData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -117,12 +119,7 @@ const AddProject = () => {
       formData.append("assign_with_ids", JSON.stringify(solvers));
       if (fileAttachment) formData.append("resource_files", fileAttachment);
 
-      formData.forEach((val, index) => {
-        console.log(index, val);
-      });
-
       const res = await axiosApi.post("/projects/create", formData);
-      console.log(res);
       toast.success("Task created successfully!");
       try {
         const taskMessage = `<strong>Task Status:</strong><p>New Task waiting for you</p>`;
@@ -141,6 +138,7 @@ const AddProject = () => {
       toggleModal();
       reset();
       setSolvers([]);
+      refetch();
     } catch (error) {
       console.error("Failed to create project:", error);
       toast.error("Failed to create project. Please try again.");

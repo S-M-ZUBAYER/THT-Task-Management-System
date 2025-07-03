@@ -33,7 +33,9 @@ export const ProjectTables = ({ Data, loading }) => {
   return (
     <div className="bg-white rounded-xl border p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
+        <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">
+          All Project
+        </h3>
         {admin && <AddProject />}
       </div>
       <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">

@@ -9,7 +9,6 @@ const ITEMS_PER_PAGE = 12;
 const AllTask = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { allTask, loading } = useGetAllTaskData();
-
   const totalPages = Math.ceil(allTask.length / ITEMS_PER_PAGE);
 
   const paginatedTasks = useMemo(() => {
@@ -35,7 +34,7 @@ const AllTask = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-6">
             {paginatedTasks.map((data, index) => (
-              <ProjectTaskCard key={index} {...data} />
+              <ProjectTaskCard key={index} task={data} />
             ))}
           </div>
           <div className="flex justify-end mt-6">

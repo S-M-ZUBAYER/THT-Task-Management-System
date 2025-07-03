@@ -21,10 +21,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { useGetAllTaskData } from "@/hook/useGetAllTaskData";
+import { Edit2 } from "lucide-react";
+import { useProjectUpdateStore } from "@/Zustand/useProjectUpdateStore";
 
-function ProjectTaskMenu({ id }) {
+function ProjectTaskMenu({ id, task }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { GetAllTaskfetchTasks } = useGetAllTaskData();
+  const { setShowUpdateModal, setProjectDetails } = useProjectUpdateStore();
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
@@ -81,7 +84,20 @@ function ProjectTaskMenu({ id }) {
               }}
             >
               <img src={icons.Delete} alt="Edit" className="w-4 h-4 mr-2" />
-              <p>Delete Task</p>
+              <p>Delete Project</p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <div
+              className="flex items-center text-[#004368] "
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowUpdateModal(true);
+                setProjectDetails(task);
+              }}
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              <p>Edit Project</p>
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>

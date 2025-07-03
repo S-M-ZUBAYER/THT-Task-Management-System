@@ -12,9 +12,15 @@ export const useProjectTaskData = () => {
     setIsLoading(true);
     try {
       const res = await axiosApi(`/task-details/projectName/${projectName}`);
-      setTasks(res.data.data);
+
+      if (res.status === 500) {
+        setTasks([]);
+      } else {
+        setTasks(res.data.data);
+      }
     } catch (error) {
       console.error("Error fetching project tasks:", error);
+      setTasks([]);
     } finally {
       setIsLoading(false);
     }
