@@ -23,17 +23,23 @@ import { useState } from "react";
 import { useGetAllTaskData } from "@/hook/useGetAllTaskData";
 import { Edit2 } from "lucide-react";
 import { useProjectUpdateStore } from "@/Zustand/useProjectUpdateStore";
+import useTaskColumns from "@/hook/useTasksData";
+import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
 
 function ProjectTaskMenu({ id, task }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { GetAllTaskfetchTasks } = useGetAllTaskData();
   const { setShowUpdateModal, setProjectDetails } = useProjectUpdateStore();
+  const { fetchTasks } = useTaskColumns();
+  const { refetch } = useGetAllProjectData();
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
       await axiosApi.post(`/projects/delete/${id}`);
       toast.success("Project deleted successfully");
       GetAllTaskfetchTasks();
+      fetchTasks();
+      refetch();
     } catch (error) {
       console.error("Error deleting Project:", error);
       toast.error("Failed to delete project");

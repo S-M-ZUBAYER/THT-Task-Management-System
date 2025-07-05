@@ -13,6 +13,12 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
@@ -130,10 +136,23 @@ const AddTask = () => {
     <>
       <div
         onClick={toggleModal}
-        className="flex items-center justify-center text-[#004368] bg-[#E6ECF0] hover:bg-[#D6E6F0] focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
+        className="flex items-center justify-center text-[#004368]  font-medium rounded-full p-3 transition-colors"
         aria-label="Add new bug"
       >
-        <Plus className="w-4 h-4" aria-hidden="true" />
+        <Tooltip>
+          <TooltipTrigger
+            style={{
+              backgroundColor: "#E6ECF0",
+              borderRadius: "50%",
+              padding: "0.75em 0.8em",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add New Task</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {isOpen && (

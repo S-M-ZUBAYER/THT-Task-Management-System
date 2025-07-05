@@ -118,7 +118,7 @@ export const ProjectTables = ({ Data, loading }) => {
                   {loading ? (
                     <Loader />
                   ) : (
-                    "No tasks available. Please add a task."
+                    "No Projects available. Please add a project."
                   )}
                 </td>
               </tr>
