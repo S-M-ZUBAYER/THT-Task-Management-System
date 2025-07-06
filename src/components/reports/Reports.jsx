@@ -49,7 +49,7 @@ const Reports = () => {
       </div>
 
       {loading && <p>Loading reports...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
+      {allData.length === 0 && <p>No Task Report</p>}
 
       {!loading && !error && filteredData.length === 0 && (
         <p className="text-gray-500">No reports found for this date range.</p>

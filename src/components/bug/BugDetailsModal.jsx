@@ -26,7 +26,7 @@ const schema = z.object({
 });
 
 export default function BugDetailsModal({ isOpen, onClose, bug }) {
-  const { id: projectId, projectName } = useBugData();
+  const { id: projectId, projectName, fetchBugsById } = useBugData();
   const { admin, user } = useUserData();
   const { sendMessage } = useWebSocket();
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +83,7 @@ export default function BugDetailsModal({ isOpen, onClose, bug }) {
       } else {
         toast.error("Failed to submit bug details.");
       }
+      fetchBugsById();
       onClose();
     } catch (error) {
       console.error("Error submitting bug details:", error);

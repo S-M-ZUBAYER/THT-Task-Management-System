@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export function AddTaskReport() {
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [detail, setDetails] = useState("");
   const { user } = useUserData();
@@ -22,11 +23,12 @@ export function AddTaskReport() {
   const { sendMessage } = useWebSocket();
 
   const handleAddTaskReport = async () => {
+    if (isLoading) return;
     if (!detail.trim()) {
       toast.error("Task report details cannot be empty.");
       return;
     }
-
+    setIsLoading(true);
     try {
       const payload = {
         employeeName: user.name,
@@ -58,6 +60,8 @@ export function AddTaskReport() {
     } catch (error) {
       toast.error("Failed to submit Task Report.");
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -154,12 +158,16 @@ export function AddTaskReport() {
                   </div>
 
                   <div className="flex justify-end">
-                    <div
+                    <button
                       onClick={handleAddTaskReport}
                       className="text-white bg-[#004368] hover:bg-[#4a6777] font-medium rounded-lg text-sm px-6 py-2.5"
+                      disabled={isLoading}
+                      style={{
+                        backgroundColor: "#004368",
+                      }}
                     >
-                      Submit
-                    </div>
+                      {isLoading ? "Submitting..." : "Submit"}
+                    </button>
                   </div>
                 </div>
               </div>

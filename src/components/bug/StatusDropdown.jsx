@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -13,29 +14,29 @@ import { format } from "date-fns";
 import { useUserData } from "@/hook/useUserData";
 
 export default function StatusDropdown({ current, id, bugName }) {
+  const [status, setStatus] = useState(current); // internal status state
   const { id: projectId, projectName, fetchBugsById } = useBugData();
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
 
+  useEffect(() => {
+    setStatus(current);
+  }, [current]);
+
   const updateStatus = async (value) => {
     try {
       await axiosApi.post(`/bugStatus/${id}`, { status: value });
+      setStatus(value);
       toast.success("Bug status updated successfully");
       fetchBugsById();
-      try {
-        sendMessage({
-          type: "notify_admins",
-          message: `Bug "${bugName}" status updated to ${value}`,
-          name: user.name.trim(),
-          date: format(new Date(), "MM-dd-yyyy"),
-          path: `/bug-details/${projectId}/${projectName}`,
-        });
-      } catch (error) {
-        console.error("Error updating bug status:", error);
-        toast.error(
-          error.response?.data?.message || "Failed to notify bug status"
-        );
-      }
+
+      sendMessage({
+        type: "notify_admins",
+        message: `Bug "${bugName}" status updated to ${value}`,
+        name: user.name.trim(),
+        date: format(new Date(), "MM-dd-yyyy"),
+        path: `/bug-details/${projectId}/${projectName}`,
+      });
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to update bug status"
@@ -44,7 +45,7 @@ export default function StatusDropdown({ current, id, bugName }) {
   };
 
   return (
-    <Select defaultValue={current} onValueChange={updateStatus}>
+    <Select value={status} onValueChange={updateStatus}>
       <SelectTrigger
         style={{
           backgroundColor: "transparent",

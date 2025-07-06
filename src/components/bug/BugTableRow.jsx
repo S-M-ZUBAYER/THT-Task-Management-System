@@ -17,6 +17,7 @@ export default function BugTableRow({ bug }) {
     attachmentFile = "#",
     status = "Open",
     id,
+    remark,
   } = bug;
   const authorized = assignWith.some((item) => item.id === user.id);
 
@@ -101,6 +102,7 @@ export default function BugTableRow({ bug }) {
           <span className="text-muted-foreground">{status}</span>
         )}
       </td>
+      <td className="px-4 py-3">{remark} </td>
       <BugDetailsModal isOpen={open} onClose={handleCloseModal} bug={bug} />
     </tr>
   );

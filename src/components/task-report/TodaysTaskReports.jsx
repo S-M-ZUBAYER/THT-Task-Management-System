@@ -8,7 +8,7 @@ const ITEMS_PER_PAGE = 3;
 
 export default function TodaysTaskReports() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { tasksReport } = useTaskReportData();
+  const { tasksReport, getTasksReport } = useTaskReportData();
 
   const todayStr = new Date().toLocaleDateString("en-CA");
 
@@ -45,7 +45,7 @@ export default function TodaysTaskReports() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {paginatedTasks.map((task, idx) => (
-          <TaskCard key={idx} {...task} />
+          <TaskCard key={idx} {...task} fn={getTasksReport} />
         ))}
       </div>
 
