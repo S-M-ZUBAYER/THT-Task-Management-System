@@ -37,7 +37,7 @@ function DatePicker({ form, label, name = "date" }) {
             />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className="w-auto p-0 z-[9999] bg-white rounded-md shadow-lg">
           <Calendar
             mode="single"
             selected={selectedDate}

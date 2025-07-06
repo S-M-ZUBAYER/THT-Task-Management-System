@@ -26,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
 
 const schema = z.object({
   project_name: z.string().min(3, "Task title is required"),
@@ -60,6 +61,7 @@ const AddProject = () => {
   const modalRef = useRef(null);
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
+  const { refetch } = useGetAllProjectData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -117,22 +119,17 @@ const AddProject = () => {
       formData.append("assign_with_ids", JSON.stringify(solvers));
       if (fileAttachment) formData.append("resource_files", fileAttachment);
 
-      formData.forEach((val, index) => {
-        console.log(index, val);
-      });
-
-      const res = await axiosApi.post("/projects/create", formData);
-      console.log(res);
+      await axiosApi.post("/projects/create", formData);
       toast.success("Task created successfully!");
       try {
-        const taskMessage = `<strong>Task Status:</strong><p>New Task waiting for you</p>`;
+        const taskMessage = `<strong>Project Status:</strong><p>New Project waiting for you</p>`;
         sendMessage({
           type: "notify_specific",
           userIds: solvers.map(String),
           message: taskMessage,
           name: user.name.trim(),
           date: format(new Date(), "MM-dd-yyyy"),
-          path: `/task-details/${res.data.result.insertId}`,
+          path: "/all-project",
         });
       } catch (error) {
         console.error("Failed to send notification:", error);
@@ -141,6 +138,8 @@ const AddProject = () => {
       toggleModal();
       reset();
       setSolvers([]);
+      refetch();
+      setFileAttachment(null);
     } catch (error) {
       console.error("Failed to create project:", error);
       toast.error("Failed to create project. Please try again.");
@@ -161,7 +160,7 @@ const AddProject = () => {
             style={{
               backgroundColor: "#E6ECF0",
               borderRadius: "50%",
-              padding: "0.8em 0.9em",
+              padding: "0.75em 0.8em",
             }}
           >
             <Plus className="w-4 h-4" />
@@ -380,7 +379,7 @@ const AddProject = () => {
                 disabled={isLoading}
                 style={{ backgroundColor: "#004368" }}
               >
-                {isLoading ? "Creating..." : "Create Task"}
+                {isLoading ? "Creating..." : "Create Project"}
               </button>
             </form>
           </motion.div>

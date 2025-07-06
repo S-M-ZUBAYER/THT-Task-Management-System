@@ -21,16 +21,25 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { useGetAllTaskData } from "@/hook/useGetAllTaskData";
+import { Edit2 } from "lucide-react";
+import { useProjectUpdateStore } from "@/Zustand/useProjectUpdateStore";
+import useTaskColumns from "@/hook/useTasksData";
+import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
 
-function ProjectTaskMenu({ id }) {
+function ProjectTaskMenu({ id, task }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { GetAllTaskfetchTasks } = useGetAllTaskData();
+  const { setShowUpdateModal, setProjectDetails } = useProjectUpdateStore();
+  const { fetchTasks } = useTaskColumns();
+  const { refetch } = useGetAllProjectData();
   const handleDelete = async (e) => {
     e.stopPropagation();
     try {
       await axiosApi.post(`/projects/delete/${id}`);
       toast.success("Project deleted successfully");
       GetAllTaskfetchTasks();
+      fetchTasks();
+      refetch();
     } catch (error) {
       console.error("Error deleting Project:", error);
       toast.error("Failed to delete project");
@@ -81,7 +90,20 @@ function ProjectTaskMenu({ id }) {
               }}
             >
               <img src={icons.Delete} alt="Edit" className="w-4 h-4 mr-2" />
-              <p>Delete Task</p>
+              <p>Delete Project</p>
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <div
+              className="flex items-center text-[#004368] "
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowUpdateModal(true);
+                setProjectDetails(task);
+              }}
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              <p>Edit Project</p>
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>

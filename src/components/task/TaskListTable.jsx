@@ -36,28 +36,29 @@ export const TaskListTable = ({ taskData, loading }) => {
         <h3 className="text-sm font-semibold mb-4 text-[#1A1A1A]">All tasks</h3>
         {admin && <AddTask />}
       </div>
-      <div className="overflow-auto bg-[#FDFBFF] rounded-lg ">
-        <table className="w-full text-sm  text-center">
+      <div className="overflow-auto bg-[#FDFBFF] rounded-lg">
+        <table className="w-full text-sm text-center">
           <thead className="text-muted-foreground border-b">
             <tr className="text-[#004368]">
               <th className="p-2 text-left">Name</th>
               <th>
-                <div className="flex text-[#004368] justify-center items-center gap-1.5">
-                  <Calendar className="w-4 h-4 " />
-                  <p>Start date</p>
+                <div className="flex justify-center items-center gap-1.5">
+                  <Calendar className="w-4 h-4" />
+                  <p>Start Date</p>
                 </div>
               </th>
               <th>
-                <div className="flex text-[#004368] justify-center items-center gap-1.5">
+                <div className="flex justify-center items-center gap-1.5">
                   <Calendar className="w-4 h-4" />
                   <p>End Date</p>
                 </div>
               </th>
-              <th className="p-2">Assigned on</th>
+              <th className="p-2">Assigned On</th>
               <th className="p-2">Resources</th>
               <th className="p-2">Status</th>
             </tr>
           </thead>
+
           <tbody>
             {Array.isArray(paginatedTasks) && paginatedTasks.length > 0 ? (
               paginatedTasks.map((task) => {
@@ -66,10 +67,12 @@ export const TaskListTable = ({ taskData, loading }) => {
                 return (
                   <tr
                     key={taskInfo.id}
-                    className="border-b cursor-pointer"
+                    className="border-b hover:bg-[#F4F2FB] transition cursor-pointer"
                     onClick={() => handleTaskDetails(taskInfo.id)}
                   >
-                    <td className="p-2 text-left">{taskInfo.task_title}</td>
+                    <td className="p-2 text-left w-[6vw] ">
+                      {taskInfo.task_title}
+                    </td>
 
                     <td className="p-2">
                       {format(
@@ -78,12 +81,12 @@ export const TaskListTable = ({ taskData, loading }) => {
                       )}
                     </td>
 
-                    <td className="pl-5">
+                    <td className="p-2">
                       {format(new Date(taskInfo.task_deadline), "yyyy-MM-dd")}
                     </td>
 
-                    <td className="flex justify-center items-center p-2">
-                      <div className="flex">
+                    <td className="p-2">
+                      <div className="flex justify-center items-center">
                         {Array.isArray(taskInfo.assigned_employee_ids) &&
                           taskInfo.assigned_employee_ids.map(
                             ({ image }, idx) => (
@@ -91,7 +94,7 @@ export const TaskListTable = ({ taskData, loading }) => {
                                 key={idx}
                                 src={image}
                                 alt="Employee"
-                                className="w-6 h-6 rounded-full border-2 border-white -ml-1"
+                                className="w-6 h-6 rounded-full border-2 border-white -ml-1 first:ml-0"
                               />
                             )
                           )}
@@ -122,6 +125,7 @@ export const TaskListTable = ({ taskData, loading }) => {
           </tbody>
         </table>
       </div>
+
       <div className="flex justify-end mt-4 space-x-2 text-sm text-gray-500">
         <CustomPagination
           currentPage={currentPage}

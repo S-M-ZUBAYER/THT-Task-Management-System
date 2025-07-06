@@ -9,10 +9,16 @@ export const useGetAllProjectData = () => {
   const getAllProject = async () => {
     setIsLoading(true);
     try {
-      const res = await axiosApi.get("/projects/getAll");
-      setProject(res.data?.data || []);
+      const response = await axiosApi.get("/projects/getAll");
+
+      if (response.status === 500) {
+        setProject([]);
+      } else {
+        setProject(response.data?.data || []);
+      }
     } catch (error) {
       console.error("All project error:", error);
+      setProject([]);
     } finally {
       setIsLoading(false);
     }

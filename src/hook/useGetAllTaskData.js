@@ -11,8 +11,14 @@ export const useGetAllTaskData = () => {
     try {
       const response = await axiosApi.get("/ProjectListWithTasks");
       setAllTask(response?.data?.result);
+      if (response.status === 500) {
+        setAllTask([]);
+      } else {
+        setAllTask(response?.data?.result);
+      }
     } catch (error) {
       console.error("Error fetching bugs:", error);
+      setAllTask([]);
     } finally {
       setLoading(false);
     }

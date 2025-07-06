@@ -13,6 +13,12 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import DatePicker from "../DatePicker";
 import { axiosApi } from "@/lib/axiosApi";
 import toast from "react-hot-toast";
@@ -27,7 +33,7 @@ const schema = z.object({
   task_title: z.string().min(3, "Task title is required"),
   task_details: z.string().min(3, "Bug details required"),
   task_starting_time: z.date({ required_error: "Date is required" }),
-  task_deadline: z.date().optional().nullable(),
+  task_deadline: z.date({ required_error: "Date is required" }),
   status: z.enum(["To Do", "In Progress", "Completed"]),
   assigned_employee_ids: z.array(z.string()).optional(),
 });
@@ -75,7 +81,7 @@ const AddTask = () => {
       task_title: "",
       task_details: "",
       task_starting_time: new Date(),
-      task_deadline: null,
+      task_deadline: undefined,
       status: "To Do",
       assigned_employee_ids: [],
     },
@@ -92,9 +98,7 @@ const AddTask = () => {
         ...values,
         project_name: projectName,
         task_starting_time: values.task_starting_time.toISOString(),
-        task_deadline: values.task_deadline
-          ? values.task_deadline.toISOString()
-          : null,
+        task_deadline: values.task_deadline.toISOString(),
         task_completing_date: null,
         assigned_employee_ids: solvers,
       };
@@ -132,10 +136,23 @@ const AddTask = () => {
     <>
       <div
         onClick={toggleModal}
-        className="flex items-center justify-center text-[#004368] bg-[#E6ECF0] hover:bg-[#D6E6F0] focus:ring-4 focus:ring-blue-300 font-medium rounded-full p-3 transition-colors"
+        className="flex items-center justify-center text-[#004368]  font-medium rounded-full p-3 transition-colors"
         aria-label="Add new bug"
       >
-        <Plus className="w-4 h-4" aria-hidden="true" />
+        <Tooltip>
+          <TooltipTrigger
+            style={{
+              backgroundColor: "#E6ECF0",
+              borderRadius: "50%",
+              padding: "0.75em 0.8em",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add New Task</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {isOpen && (

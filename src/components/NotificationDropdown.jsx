@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import useTaskColumns from "@/hook/useTasksData";
 import useTaskData from "@/hook/useTaskData";
 import { useBugData } from "@/hook/useBugData";
+import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
 
 const NotificationDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,7 @@ const NotificationDrawer = () => {
   const { fetchTasks } = useTaskColumns();
   const { fetchTaskById } = useTaskData();
   const { fetchBugsById } = useBugData();
+  const { refetch } = useGetAllProjectData();
   const { unreadCount, messages, markAsRead, seenMessageIds } =
     useNotificationStore();
 
@@ -33,6 +35,8 @@ const NotificationDrawer = () => {
       fetchTaskById();
     } else if (path.includes("bug")) {
       fetchBugsById();
+    } else if (path.includes("project")) {
+      refetch();
     }
     navigate(path);
   };
