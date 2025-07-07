@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Plus } from "lucide-react";
 import { useUserData } from "@/hook/useUserData";
 import toast from "react-hot-toast";
@@ -21,13 +21,15 @@ export function AddTaskReport() {
   const { user } = useUserData();
   const { getTasksReport } = useTaskReportData();
   const { sendMessage } = useWebSocket();
+  const isSubmitting = useRef(false);
 
   const handleAddTaskReport = async () => {
-    if (isLoading) return;
+    if (isSubmitting.current) return;
     if (!detail.trim()) {
       toast.error("Task report details cannot be empty.");
       return;
     }
+    isSubmitting.current = true;
     setIsLoading(true);
     try {
       const payload = {
@@ -62,6 +64,7 @@ export function AddTaskReport() {
       console.error(error);
     } finally {
       setIsLoading(false);
+      isSubmitting.current = false;
     }
   };
 
