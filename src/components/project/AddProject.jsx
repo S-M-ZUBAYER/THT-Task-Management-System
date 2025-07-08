@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useGetAllProjectData } from "@/hook/useGetAllprojectData";
+import { useGetAllTaskData } from "@/hook/useGetAllTaskData";
 
 const schema = z.object({
   project_name: z.string().min(3, "Task title is required"),
@@ -62,6 +63,7 @@ const AddProject = () => {
   const { sendMessage } = useWebSocket();
   const { user } = useUserData();
   const { refetch } = useGetAllProjectData();
+  const { GetAllTaskfetchTasks } = useGetAllTaskData();
 
   useEffect(() => {
     const fetchSolvers = async () => {
@@ -139,6 +141,7 @@ const AddProject = () => {
       reset();
       setSolvers([]);
       refetch();
+      GetAllTaskfetchTasks();
       setFileAttachment(null);
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -222,7 +225,7 @@ const AddProject = () => {
                   id="project_requirements"
                   rows={4}
                   {...register("project_requirements")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md custom-scrollbar"
                   placeholder="Project requirements here..."
                 />
                 {errors.project_requirements && (

@@ -71,7 +71,7 @@ export default function BugDetailsModal({ isOpen, onClose, bug }) {
           sendMessage({
             type: "notify_specific",
             userIds: assignWith.map((u) => String(u.id)),
-            message: `<strong class="w-[150px]">Bug Status:</strong><p>${BugTitle} Bug remark status update to ${data.remark}</p>`,
+            message: `<div class="flex items-start gap-1"><strong class="whitespace-nowrap font-bold">Bug Status:</strong><span>${BugTitle} Bug remark status update to ${data.remark}</span></div>`,
             name: user.name.trim(),
             date: format(new Date(), "MM-dd-yyyy"),
             path: `/bug-details/${projectId}/${projectName}`,

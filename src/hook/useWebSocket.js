@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useUserData } from "./useUserData";
 import { useNotificationStore } from "@/Zustand/useNotificationStore";
 import notificationSound from "../assets/notification.mp3";
@@ -7,70 +7,71 @@ import { axiosApi } from "@/lib/axiosApi";
 export const useWebSocket = () => {
   const socketRef = useRef(null);
   const { user } = useUserData();
-  const { messages, addMessage, setMessages } = useNotificationStore();
+  const { addMessage, setMessages } = useNotificationStore();
 
-  const getNotification = async () => {
+  const getNotifications = useCallback(async () => {
     try {
       const res = await axiosApi.get(`/notification/${user.id}`);
-      if (res.data.data && res.data.data.length > 0) {
+      if (res.data?.data?.length > 0) {
         setMessages(res.data.data);
       }
     } catch (error) {
-      console.error("Error fetching notification:", error);
+      console.error("Failed to fetch notifications:", error);
     }
-  };
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      getNotification();
-    }
-  }, []);
+  }, [user.id, setMessages]);
 
   useEffect(() => {
     if (!user?.id || !user?.role) return;
 
-    socketRef.current = new WebSocket("wss://grozziie.zjweiting.com:57683");
+    const socket = new WebSocket("wss://grozziie.zjweiting.com:57683");
+    socketRef.current = socket;
 
-    socketRef.current.onopen = () => {
-      socketRef.current.send(
+    socket.onopen = () => {
+      console.log("✅ WebSocket connected");
+
+      socket.send(
         JSON.stringify({
           type: "register",
           userId: `${user.id}`,
           role: user.role,
         })
       );
+
+      getNotifications();
     };
 
-    socketRef.current.onmessage = (event) => {
+    socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+
         const sound = new Audio(notificationSound);
         sound.play();
+        console.log(event.data);
+
         addMessage(data);
       } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+        console.error("WebSocket message error:", error);
       }
     };
 
-    socketRef.current.onerror = (error) => {
+    socket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
 
-    socketRef.current.onclose = () => {
-      console.log("WebSocket connection closed");
+    socket.onclose = () => {
+      console.warn("WebSocket closed");
     };
 
     return () => {
-      socketRef.current?.close();
+      socket.close();
     };
-  }, [user?.id, user?.role, addMessage]);
+  }, [user?.id, user?.role, getNotifications, addMessage, socketRef]);
 
   const sendMessage = (payload) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      console.log("Sending message:", payload);
       socketRef.current.send(JSON.stringify(payload));
     } else {
-      console.warn("WebSocket is not connected.");
+      console.warn("WebSocket not ready");
     }
   };
 

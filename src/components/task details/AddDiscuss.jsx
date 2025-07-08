@@ -189,7 +189,7 @@ const AddDiscuss = () => {
                   id="details"
                   rows={4}
                   {...form.register("details")}
-                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 "
+                  className="border border-[#d8d4d4ee] rounded py-1.5 px-0.5 w-full outline-none text-[#004368] focus:border-blue-500 focus:ring-blue-500 custom-scrollbar"
                   placeholder="Describe the discuss Details"
                 />
                 {form.formState.errors.details && (

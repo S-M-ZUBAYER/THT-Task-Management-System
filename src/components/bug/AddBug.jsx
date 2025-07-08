@@ -232,7 +232,7 @@ const AddBug = () => {
                   id="details"
                   rows={4}
                   {...form.register("BugDetails")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 custom-scrollbar"
                   placeholder="Describe the bug..."
                 />
                 {form.formState.errors.BugDetails && (

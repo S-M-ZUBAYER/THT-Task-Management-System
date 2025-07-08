@@ -178,7 +178,7 @@ const UpdateDiscuss = ({ discussion }) => {
                       <textarea
                         {...form.register("details")}
                         rows={4}
-                        className="w-full mt-1 p-2 border rounded-md text-sm"
+                        className="w-full mt-1 p-2 border rounded-md text-sm custom-scrollbar"
                       />
                       {form.formState.errors.details && (
                         <p className="text-sm text-red-600 mt-1">

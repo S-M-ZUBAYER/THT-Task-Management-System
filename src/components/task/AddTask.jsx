@@ -206,7 +206,7 @@ const AddTask = () => {
                   id="task_details"
                   rows={4}
                   {...register("task_details")}
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded-md custom-scrollbar"
                   placeholder="Task requirements here..."
                 />
                 {errors.task_details && (
