@@ -1,9 +1,27 @@
+import { useMemo, useState } from "react";
+
 import { useBugData } from "@/hook/useBugData";
 import BugTableRow from "./BugTableRow";
 import icons from "@/constants/icons";
+import CustomPagination from "../Pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 export default function BugTable() {
+  const [currentPage, setCurrentPage] = useState(1);
   const { bugs } = useBugData();
+  const totalPages = Math.ceil(bugs.length / ITEMS_PER_PAGE);
+
+  const paginatedBugs = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return bugs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [currentPage, bugs]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
   return (
     <div className="overflow-x-auto rounded-lg  ">
       <table className="w-full text-sm text-left text-gray-600">
@@ -26,6 +44,7 @@ export default function BugTable() {
             <th className="px-4 py-3">Priority</th>
             <th className="px-4 py-3">Attachments</th>
             <th className="px-4 py-3 pl-7">Status</th>
+            <th className="px-4 py-3 pl-7">Remark</th>
           </tr>
         </thead>
         <tbody>
@@ -36,10 +55,17 @@ export default function BugTable() {
               </td>
             </tr>
           ) : (
-            bugs.map((bug) => <BugTableRow key={bug.id} bug={bug} />)
+            paginatedBugs.map((bug) => <BugTableRow key={bug.id} bug={bug} />)
           )}
         </tbody>
       </table>
+      <div className="flex justify-end mt-6">
+        <CustomPagination
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          totalPages={totalPages}
+        />
+      </div>
     </div>
   );
 }

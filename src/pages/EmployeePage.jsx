@@ -13,7 +13,7 @@ const EmployeePage = () => {
         <p className="text-[1.7vw] text-[#004368] font-[600] mb-5">Admin</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {adminData.map((employee, index) => (
-            <EmployeeCard key={index} employee={employee} show={false} />
+            <EmployeeCard key={index} employee={employee} show={admin} />
           ))}
         </div>
         <hr className="my-6" />

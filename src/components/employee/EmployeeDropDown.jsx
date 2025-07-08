@@ -41,7 +41,6 @@ function EmployeeDropDown({ employee }) {
   };
   const handleDisable = async () => {
     try {
-      console.log("diable");
       await axiosApi.post(`/users/deactivate/${employee.id}`, {
         deactivate: 1,
       });
@@ -91,12 +90,18 @@ function EmployeeDropDown({ employee }) {
               <p>Edit Employee</p>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleMakeAdmin}>
-            <div className="flex items-center text-[#004368]">
-              <img src={icons.manager} alt="Manager" className="w-4 h-4 mr-2" />
-              <p>Make As Admin</p>
-            </div>
-          </DropdownMenuItem>
+          {employee.role === "User" && (
+            <DropdownMenuItem onClick={handleMakeAdmin}>
+              <div className="flex items-center text-[#004368]">
+                <img
+                  src={icons.manager}
+                  alt="Manager"
+                  className="w-4 h-4 mr-2"
+                />
+                <p>Make As User</p>
+              </div>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={handleDelete}>
             <div className="flex items-center text-[#004368]">
               <img src={icons.Delete} alt="Delete" className="w-4 h-4 mr-2" />

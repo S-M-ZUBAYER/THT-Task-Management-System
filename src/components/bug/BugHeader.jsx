@@ -13,7 +13,7 @@ export default function BugHeader() {
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-[#B0C5D0] pb-4">
       <h2 className="text-xl font-semibold text-[#004368] ">Bug Reports</h2>
       <div className="flex gap-4 mt-4 md:mt-0 justify-center items-center">
-        <Select defaultValue={"one week"}>
+        {/* <Select defaultValue={"one week"}>
           <SelectTrigger
             style={{
               backgroundColor: "transparent",
@@ -29,7 +29,7 @@ export default function BugHeader() {
             <SelectItem value="Two Week">2 Week</SelectItem>
             <SelectItem value="Three Week">3 Week</SelectItem>
           </SelectContent>
-        </Select>
+        </Select> */}
         {admin && <AddBug />}
       </div>
     </div>
